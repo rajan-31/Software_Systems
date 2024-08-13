@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 # /*
 # ================================================
 # Author : Rajan Khade
@@ -10,7 +12,6 @@
 # ================================================
 # */
 
-#/usr/bin/bash
 
 # source path needs to be relative to symlink location OR
 # absolute path

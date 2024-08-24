@@ -26,8 +26,9 @@ int main(int argc, char const *argv[])
 
 	while(numberOfBytesRead > 0) {
 		if(buff == '\n'){
-			printf("\n");
-			sleep(1);
+			// printf("\n");
+			// sleep(1);
+			getchar();
 		}
 		else
 			printf("%c", buff);

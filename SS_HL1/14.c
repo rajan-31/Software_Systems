@@ -22,7 +22,7 @@ int main(int argc, char const *argv[]) {
 	struct stat fileStat;
 
 	// Get file status
-    if (stat(filename, &fileStat) == -1) {
+    if (lstat(filename, &fileStat) == -1) {
         perror("Error");
         return 1;
     }

@@ -15,6 +15,6 @@ int main() {
 	int fd = creat("./test_dir_02/test_file_02.txt", 0666);
 	printf("%d\n", fd);
 
-	return 0;
 	close(fd);
+	return 0;
 }

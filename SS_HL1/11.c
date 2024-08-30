@@ -37,8 +37,6 @@ int main(int argc, char const *argv[])
 		return 1;
 	}
 
-	// lseek(fd, -1, SEEK_END);
-
 	char buff2[] = "line2";
 	int w2 = write(fd_dup, buff2, strlen(buff2));
 	if(w2 == -1) {

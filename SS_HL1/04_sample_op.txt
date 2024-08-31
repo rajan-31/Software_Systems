@@ -1,0 +1,8 @@
+# If file is not present already
+$ ./a.out
+File opened successfully!
+
+
+# If file is present already
+$ ./a.out
+Failed to open/create file!: File exists

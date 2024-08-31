@@ -1,0 +1,7 @@
+$ ll
+-rw-rw-r-- 4 rajan rajan   48 Aug 13 02:37 test_file_01_hardlink1.txt
+-rw-rw-r-- 4 rajan rajan   48 Aug 13 02:37 test_file_01_hardlink2.txt
+lrwxrwxrwx 1 rajan rajan   31 Aug 28 13:33 test_file_01_symlink1.txt -> ../test_dir_01/test_file_01.txt
+lrwxrwxrwx 1 rajan rajan   31 Aug 12 22:51 test_file_01_symlink2.txt -> ../test_dir_01/test_file_01.txt
+prw-rw-r-- 1 rajan rajan    0 Aug 28 13:33 test_named_pipe_01|
+prw-rw-r-- 1 rajan rajan    0 Aug 13 02:46 test_named_pipe_02

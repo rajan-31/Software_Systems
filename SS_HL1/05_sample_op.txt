@@ -1,0 +1,17 @@
+$ ./05.sh
+Proces with pid 5096 running in background!
+
+
+Output of "/proc/5096/fd" is:
+
+total 0
+lr-x------ 1 rajan rajan 64 Aug 30 20:11 0 -> /dev/null
+lrwx------ 1 rajan rajan 64 Aug 30 20:11 1 -> /dev/pts/0
+lrwx------ 1 rajan rajan 64 Aug 30 20:11 2 -> /dev/pts/0
+l-wx------ 1 rajan rajan 64 Aug 30 20:11 3 -> /home/rajan/0.Academics/Software_Systems/SS_HL1/test_dir_02/test_file_990.txt
+l-wx------ 1 rajan rajan 64 Aug 30 20:11 4 -> /home/rajan/0.Academics/Software_Systems/SS_HL1/test_dir_02/test_file_991.txt
+l-wx------ 1 rajan rajan 64 Aug 30 20:11 5 -> /home/rajan/0.Academics/Software_Systems/SS_HL1/test_dir_02/test_file_992.txt
+l-wx------ 1 rajan rajan 64 Aug 30 20:11 6 -> /home/rajan/0.Academics/Software_Systems/SS_HL1/test_dir_02/test_file_993.txt
+
+
+Proces with pid 5096 killed!

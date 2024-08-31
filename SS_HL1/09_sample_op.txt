@@ -1,0 +1,11 @@
+$ ./a.out ./test_dir_01/test_file_01.txt
+Inode: 2098410
+Hard links count: 4
+Uid: 1000 (rajan)
+Gid: 1000 (rajan)
+Size: 48 bytes
+Block size: 4096 bytes
+Number of blocks: 8
+Time of last access: Fri Aug 30 10:47:54 2024
+Time of last modification (content): Tue Aug 13 02:37:15 2024
+Time of last change (metadata): Wed Aug 28 13:33:54 2024

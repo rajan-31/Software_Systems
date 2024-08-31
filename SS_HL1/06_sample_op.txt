@@ -1,0 +1,4 @@
+$ ./a.out
+Enter some input for STDIN, it will be printed immediately after pressing "enter" key:
+Hey
+Hey

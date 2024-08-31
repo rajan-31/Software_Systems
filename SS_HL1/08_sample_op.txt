@@ -1,0 +1,7 @@
+$ ./a.out
+Press "enter" to read next line.
+
+Just some text from a file
+Line 2
+Line 3
+Line 4

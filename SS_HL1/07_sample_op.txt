@@ -1,0 +1,11 @@
+$ cat test_dir_01/test_file_01.txt
+Just some text from a file
+Line 2
+Line 3
+Line 4
+
+$ cat test_dir_02/test_file_04.txt
+Just some text from a file
+Line 2
+Line 3
+Line 4

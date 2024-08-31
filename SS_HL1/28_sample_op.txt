@@ -1,0 +1,3 @@
+$ ./a.out
+Max real time priority: 99
+Min real time priority: 1

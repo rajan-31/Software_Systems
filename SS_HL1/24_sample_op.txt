@@ -1,0 +1,7 @@
+$ ./a.out
+Parent process is running
+Parent procees id : 7857
+Parent process exits.
+Child process is running.
+Child procees id : 7858
+Child Became Orphan.

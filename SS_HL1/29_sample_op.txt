@@ -1,0 +1,9 @@
+$ sudo ./a.out
+Current scheduling policy:
+Current scheduler is SCHED_OTHER
+
+Changing to SCHED_FIFO...
+Current scheduler is SCHED_FIFO
+
+Changing to SCHED_RR...
+Current scheduler is SCHED_RR

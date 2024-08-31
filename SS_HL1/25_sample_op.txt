@@ -1,0 +1,7 @@
+$ ./a.out
+Parent process, waiting for second child PID: 7928
+First child process, PID: 7927
+Second child process, PID: 7928
+Third child process, PID: 7929
+Second child has completed
+All children have completed

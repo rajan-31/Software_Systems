@@ -1,0 +1,6 @@
+$ ./a.out
+flags: 32770
+O_ACCMODE: 3
+accessMode: 2
+
+File is opened in read-write mode

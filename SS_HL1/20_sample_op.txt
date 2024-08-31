@@ -1,0 +1,6 @@
+$ ./a.out
+1 argument for new priority value is needed!
+
+$ ./a.out 10
+Current priority: 0
+New priority: 10

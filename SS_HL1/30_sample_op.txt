@@ -1,0 +1,10 @@
+$ gcc -o time_based_daemon 30.c
+
+$ sudo ./time_based_daemon /home/rajan/0.Academics/Software_Systems/SS_HL1/test_dir_01/test_script.sh 2 20
+
+$ tail -n 1 /var/log/syslog
+Aug 29 14:18:17 ubuntu time_based_daemon[8793]: Daemon started
+
+$ tail -n 2 /var/log/syslog
+Aug 29 14:18:17 ubuntu time_based_daemon[8793]: Daemon started
+Aug 29 14:20:02 ubuntu rajan: time_based_daemon executed "test_script.sh" at: Tuesday 29 August 2024 02:20:02 PM IST

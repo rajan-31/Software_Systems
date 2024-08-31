@@ -1,0 +1,47 @@
+# /* ============================ */
+#			Write lock demo
+# /* ============================ */
+
+# Terminal 1
+$ ./a.out
+Waiting to aquire write lock...
+Write lock acquired. Press Enter to release it.
+
+
+#Terminal 2
+
+$ ./a.out
+Waiting to aquire write lock...
+
+
+
+# /* ============================ */
+#			Read lock demo
+# /* ============================ */
+
+# Terminal 1
+$ ./a.out
+Waiting to aquire write lock...
+Write lock acquired. Press Enter to release it.
+
+Write lock released.
+
+
+Waiting to aquire read lock...
+Read lock acquired. Press Enter to release it.
+
+Read lock released.
+
+
+# Terminal 2
+$ ./a.out
+Waiting to aquire write lock...
+Write lock acquired. Press Enter to release it.
+
+Write lock released.
+
+
+Waiting to aquire read lock...
+Read lock acquired. Press Enter to release it.
+
+Read lock released.

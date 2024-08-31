@@ -1,0 +1,20 @@
+$ ./a.out ./test_dir_01/test_file_01.txt
+File type of './test_dir_01/test_file_01.txt': Regular file
+
+$ ./a.out .
+File type of '.': Directory
+
+$ ./a.out ./test_dir_02/test_file_01_symlink1.txt
+File type of './test_dir_02/test_file_01_symlink1.txt': Symbolic link
+
+$ ./a.out /dev/tty
+File type of '/dev/tty': Character device
+
+$ ./a.out /dev/loop0
+File type of '/dev/loop0': Block device
+
+$ ./a.out ./test_dir_02/test_named_pipe_01
+File type of './test_dir_02/test_named_pipe_01': FIFO/pipe
+
+$ ./a.out /var/run/docker.sock
+File type of '/var/run/docker.sock': Socket

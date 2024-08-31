@@ -1,0 +1,16 @@
+$ ./17.sh
+============================
+Running 17_1.c
+
+Enter ticket number: 101
+============================
+Running 17_2.c
+
+Read lock set
+Current ticket no: 101
+
+Write lock set
+New ticket no: 102
+
+Press Enter to release write lock...
+============================

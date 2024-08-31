@@ -1,0 +1,7 @@
+$ ./a.out
+Executing command: ./test_dir_01/test_prog.out Test-Input-1
+
+This line is in test_prog.c
+Input/argument given is: Test-Input-1
+
+Command executed successfully

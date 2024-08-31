@@ -1,0 +1,3 @@
+$ ./a.out
+Parent process id: 7316
+Child process id: 7317

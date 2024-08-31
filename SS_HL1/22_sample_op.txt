@@ -1,0 +1,3 @@
+$ cat test_dir_01/test_file_04.txt
+Written from parent process
+Written from child process

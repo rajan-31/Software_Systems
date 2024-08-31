@@ -1,0 +1,55 @@
+$ ../a.out
+=========Executing "ls -Rl" by "execl"=========
+.:
+total 40
+-rw-rw-r-- 4 rajan rajan    48 Aug 13 02:37 test_file_01.txt
+-rw-rw-r-- 1 rajan rajan    32 Aug 31 18:43 test_file_02.txt
+-rw-rw-r-- 1 rajan rajan    24 Aug 31 19:48 test_file_03.txt
+-rw-rw-r-- 1 rajan rajan    55 Aug 31 23:17 test_file_04.txt
+-rw-rw-r-- 1 rajan rajan   191 Aug 28 14:44 test_prog.c
+-rwxrwxr-x 1 rajan rajan 16008 Aug 28 14:44 test_prog.out
+-rwxrwxr-x 1 rajan rajan    84 Aug 29 02:27 test_script.sh
+
+=========Executing "ls -Rl" by "execlp"=========
+.:
+total 40
+-rw-rw-r-- 4 rajan rajan    48 Aug 13 02:37 test_file_01.txt
+-rw-rw-r-- 1 rajan rajan    32 Aug 31 18:43 test_file_02.txt
+-rw-rw-r-- 1 rajan rajan    24 Aug 31 19:48 test_file_03.txt
+-rw-rw-r-- 1 rajan rajan    55 Aug 31 23:17 test_file_04.txt
+-rw-rw-r-- 1 rajan rajan   191 Aug 28 14:44 test_prog.c
+-rwxrwxr-x 1 rajan rajan 16008 Aug 28 14:44 test_prog.out
+-rwxrwxr-x 1 rajan rajan    84 Aug 29 02:27 test_script.sh
+
+=========Executing "ls -Rl" by "execle"=========
+.:
+total 40
+-rw-rw-r-- 4 rajan rajan    48 Aug 13 02:37 test_file_01.txt
+-rw-rw-r-- 1 rajan rajan    32 Aug 31 18:43 test_file_02.txt
+-rw-rw-r-- 1 rajan rajan    24 Aug 31 19:48 test_file_03.txt
+-rw-rw-r-- 1 rajan rajan    55 Aug 31 23:17 test_file_04.txt
+-rw-rw-r-- 1 rajan rajan   191 Aug 28 14:44 test_prog.c
+-rwxrwxr-x 1 rajan rajan 16008 Aug 28 14:44 test_prog.out
+-rwxrwxr-x 1 rajan rajan    84 Aug 29 02:27 test_script.sh
+
+=========Executing "ls -Rl" by "execv"=========
+.:
+total 40
+-rw-rw-r-- 4 rajan rajan    48 Aug 13 02:37 test_file_01.txt
+-rw-rw-r-- 1 rajan rajan    32 Aug 31 18:43 test_file_02.txt
+-rw-rw-r-- 1 rajan rajan    24 Aug 31 19:48 test_file_03.txt
+-rw-rw-r-- 1 rajan rajan    55 Aug 31 23:17 test_file_04.txt
+-rw-rw-r-- 1 rajan rajan   191 Aug 28 14:44 test_prog.c
+-rwxrwxr-x 1 rajan rajan 16008 Aug 28 14:44 test_prog.out
+-rwxrwxr-x 1 rajan rajan    84 Aug 29 02:27 test_script.sh
+
+=========Executing "ls -Rl" by "execvp"=========
+.:
+total 40
+-rw-rw-r-- 4 rajan rajan    48 Aug 13 02:37 test_file_01.txt
+-rw-rw-r-- 1 rajan rajan    32 Aug 31 18:43 test_file_02.txt
+-rw-rw-r-- 1 rajan rajan    24 Aug 31 19:48 test_file_03.txt
+-rw-rw-r-- 1 rajan rajan    55 Aug 31 23:17 test_file_04.txt
+-rw-rw-r-- 1 rajan rajan   191 Aug 28 14:44 test_prog.c
+-rwxrwxr-x 1 rajan rajan 16008 Aug 28 14:44 test_prog.out
+-rwxrwxr-x 1 rajan rajan    84 Aug 29 02:27 test_script.sh

@@ -1,0 +1,39 @@
+# /* ============================ */
+# Executing 18_1.c
+
+$ ./a.out
+
+Printing records from file:
+
+Roll No.: 1	Marks: 34
+Roll No.: 2	Marks: 7
+Roll No.: 3	Marks: 15
+
+# /* ============================ */
+# Executing 18_2.c
+
+$ ./a.out
+Records currently present:
+Roll No.: 1	Marks: 34
+Roll No.: 2	Marks: 7
+Roll No.: 3	Marks: 15
+
+
+Select index (1 based) of record you want to lock and modify: 2
+Select type of lock: Read (1) Write (2) Choice: 2
+
+Waiting to acquire lock on record
+Acquired lock on record
+
+Roll No: 2
+Marks : 7
+You selected to write on this record.
+
+Enter new marks: 44
+
+Verify if modification is done:
+Roll No: 2
+Marks : 44
+Press return to exit
+
+Exited critical section

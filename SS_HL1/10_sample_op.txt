@@ -1,0 +1,9 @@
+$ ./a.out
+Written "a12345678a" in the file!
+After moving 10 bytes value returned by "lseek": 21
+Written "b12345678b" in the file!
+
+$ od -c ./test_dir_01/test_file_02.txt
+0000000   a   1   2   3   4   5   6   7   8   a  \0  \0  \0  \0  \0  \0
+0000020  \0  \0  \0  \0  \0   b   1   2   3   4   5   6   7   8   b  \0
+0000040

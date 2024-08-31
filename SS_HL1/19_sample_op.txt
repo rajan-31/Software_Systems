@@ -1,0 +1,5 @@
+$ ./a.out
+Start time is 0.000555
+End time is : 0.000593
+
+Total Time Taken is 0.000038

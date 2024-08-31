@@ -1,0 +1,7 @@
+$ ./a.out
+Waiting 10 seconds....
+date
+Data is available on stdin.
+
+$ date
+Saturday 31 August 2024 10:46:50 PM IST

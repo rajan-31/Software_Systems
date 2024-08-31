@@ -1,0 +1,12 @@
+$ ./a.out | more -n 10
+SHELL=/bin/bash
+SESSION_MANAGER=local/ubuntu:@/tmp/.ICE-unix/1866,unix/ubuntu:/tmp/.ICE-unix/1
+866
+QT_ACCESSIBILITY=1
+COLORTERM=truecolor
+XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/etc/xdg
+SSH_AGENT_LAUNCHER=gnome-keyring
+NVM_INC=/home/rajan/.nvm/versions/node/v20.12.2/include/node
+XDG_MENU_PREFIX=gnome-
+GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+--More--

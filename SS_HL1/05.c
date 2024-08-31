@@ -22,10 +22,12 @@ int main(int argc, char const *argv[])
 
 			fd[i] = open(filename, O_CREAT | O_WRONLY | O_EXCL, 0666);
 			if(fd[i] == -1) {
-				perror("Failed to open file!");
-				sleep(13);
+				printf("%s", filename);
+				perror("failed to open file!");
 	        	return 1;
 			}
+
+			sleep(1);
 		}
 	}
 

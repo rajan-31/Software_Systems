@@ -24,12 +24,11 @@ int main(int argc, char const *argv[])
 	char buff;
 	int numberOfBytesRead = read(fd, &buff, 1);
 
+	printf("Press \"enter\" to read next line. \n\n");
+
 	while(numberOfBytesRead > 0) {
-		if(buff == '\n'){
-			// printf("\n");
-			// sleep(1);
+		if(buff == '\n')
 			getchar();
-		}
 		else
 			printf("%c", buff);
 		numberOfBytesRead = read(fd, &buff, 1);

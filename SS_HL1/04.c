@@ -15,7 +15,7 @@ int main() {
 	//  O_EXCL ensures that the file is created exclusively (i.e., it fails if the file already exists).
 	int fd = open("./test_dir_02/test_file_03.txt", O_EXCL|O_CREAT|O_RDWR, 0666);
 	if(fd==-1) {
-		perror("Failed to open file!");
+		perror("Failed to open/create file!");
         return 1;
 	}
 	else

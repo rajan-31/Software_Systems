@@ -28,9 +28,9 @@ Write a program to print the following information about a given file.
 int main(int argc, char const *argv[])
 {
 	if(argc != 2) {
-		fprintf(stderr, "Only 1 argument expected given %d, %s\n", argc-1, argv[0]);
+		fprintf(stderr, "One argument (file name) expected given %d, %s\n", argc-1, argv[0]);
 
-		//in main when you want to return control to the calling process and possibly allow for cleanup after the return
+		// used in main when you want to return control to the calling process and possibly allow for cleanup after the return
 		return EXIT_FAILURE;
 	}
 

@@ -33,29 +33,29 @@ int rlock(int l) {
 
     struct student st;
 
-    lseek(fd, (l - 1) * sizeof(struct student), SEEK_SET);
-
-    read(fd, &st, sizeof(struct student));
-    printf("Roll No: %d \t Marks : %d \n", st.roll_no, st.marks);
-
     struct flock lock;
     lock.l_type=F_RDLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start =  (l - 1 ) * sizeof(struct student);
     lock.l_len = sizeof(struct student);
 
-    printf("Waiting to acquire lock on record %d \n", st.roll_no);
+    printf("\nWaiting to acquire lock on record\n");
     fcntl(fd, F_SETLKW, &lock);
+    printf("Acquired lock on record\n");
 
-    printf("Acquired lock on record %d \n", st.roll_no);
-    printf("Press return to exit\n");
+
+    lseek(fd, (l - 1) * sizeof(struct student), SEEK_SET);
+    read(fd, &st, sizeof(struct student));
+    printf("Roll No: %d \t Marks : %d \n", st.roll_no, st.marks);
+
+    printf("\nPress \"enter\" to exit\n");
 
     getchar();
     getchar();
 
     lock.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &lock);
-    printf("Exited critical section\n");
+    printf("\nExited critical section\n");
 }
 
 
@@ -68,19 +68,13 @@ int wlock(int l) {
 
     struct student st;
 
-    lseek(fd, (l- 1) * sizeof(struct student), SEEK_SET);
-
-    read(fd, &st, sizeof(struct student));
-    printf("Roll No: %d \n", st.roll_no);
-    printf("Marks : %d\n",st.marks);
-
     struct flock lock;
     lock.l_type=F_WRLCK;
     lock.l_whence=SEEK_SET;
     lock.l_start=(l- 1) * sizeof(struct student);
     lock.l_len = sizeof(struct student);
 
-    printf("Waiting to acquire lock on record %d \n", st.roll_no);
+    printf("\nWaiting to acquire lock on record\n");
     lock.l_type=F_WRLCK;
     int r=fcntl(fd, F_SETLKW, &lock);
     if(r < 0){
@@ -88,14 +82,25 @@ int wlock(int l) {
       return 1;
     }
 
-    printf("Acquired lock on record %d \n", st.roll_no);
-    printf("You selected to write on this record. \nEnter new marks: ");
+    printf("Acquired lock on record\n");
+
+    lseek(fd, (l- 1) * sizeof(struct student), SEEK_SET);
+
+    read(fd, &st, sizeof(struct student));
+    printf("\nRoll No: %d \n", st.roll_no);
+    printf("Marks : %d\n",st.marks);
+
+    printf("You selected to write on this record. \n\nEnter new marks: ");
     int marks;
     scanf("%d", &marks);
     st.marks=marks;
 
     lseek(fd, -1 * sizeof(struct student), SEEK_CUR);
     write(fd, &st, sizeof(struct student));
+
+    printf("\nVerify if modification is done: \n");
+    lseek(fd, -1 * sizeof(struct student), SEEK_CUR);
+    read(fd, &st, sizeof(struct student));
 
     printf("Roll No: %d \n", st.roll_no);
     printf("Marks : %d\n",st.marks);
@@ -110,26 +115,20 @@ int wlock(int l) {
 }
 
 int main() {
-    int fd = open("test_dir_02/test_file_07.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
+    int fd = open("test_dir_02/test_file_07.txt", O_RDWR);
     if(fd==-1) {
-        perror("Error opening file");
+        perror("Error opening file, if file doesn't exist use \"18_1.c\" to generate it");
         return 1;
-    }
-
-    int num_records=2;
-    printf("How many records do you want? ");
-    scanf("%d", &num_records);
-    srand(time(0));
-
-    struct student st;
-    for(int i=0; i<=num_records-1; i++) {
-        st.roll_no=100+i, st.marks=rand()%101;
-        write(fd, &st, sizeof(struct student));
     }
 
     /* ============================ */
 
     lseek(fd,0,SEEK_SET);
+
+    int num_records = 5;
+    struct student st;
+
+    printf("Records currently present: \n");
 
     for(int i=0; i<=num_records-1; i++) {
         read(fd, &st, sizeof(struct student));
@@ -144,7 +143,7 @@ int main() {
 
     lseek(fd, 0, SEEK_SET);
 
-    printf("Select record you want to lock: ");
+    printf("\n\nSelect index (1 based) of record you want to lock and modify: ");
     scanf("%d", &l);
     if(l<=0 || l>num_records){
       printf("No such record found\n");

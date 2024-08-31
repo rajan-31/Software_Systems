@@ -30,23 +30,27 @@ int main(int argc, char const *argv[])
 		return 1;
 	}
 
+	printf("Written \"%s\" in the file!\n", buff);
+
 	int offset = 10;
-	// coming 10 bytes back, overwrite previous data
+	// move 10 bytes
 	int l = lseek(fd, offset, SEEK_CUR);
 	if(l == -1) {
 		perror("Error writing data: ");
 		return 1;
 	}
 
-	printf("Value returned by \"lseek\": %d\n", l);
+	printf("After moving 10 bytes, value returned by \"lseek\": %d\n", l);
 
 	char buff1[] = "b12345678b";
 
-	w = write(fd, buff1, sizeof(buff));
+	w = write(fd, buff1, sizeof(buff1));
 	if(w == -1) {
 		perror("Error writing data 2nd time: ");
 		return 1;
 	}
+
+	printf("Written \"%s\" in the file!\n", buff1);
 
 	close(fd);
 

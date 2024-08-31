@@ -15,5 +15,6 @@ sudo ./time_based_daemon /home/rajan/0.Academics/Software_Systems/SS_HL1/test_di
 
 tail /var/log/syslog
 
+# ps aux | grep time_based_daemon
 # sudo kill <pid>
 # sudo kill -9 <pid>	# force

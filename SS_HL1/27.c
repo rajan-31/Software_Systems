@@ -33,6 +33,7 @@ int main() {
     pid = fork();
     if (pid == 0) {
         // Child process
+        printf("=========Executing \"ls -Rl\" by \"execl\"=========\n");
         execl("/bin/ls", "ls", "-Rl", NULL);
         perror("execl failed");
         return 1;
@@ -44,6 +45,7 @@ int main() {
     // Using execlp
     pid = fork();
     if (pid == 0) {
+        printf("\n=========Executing \"ls -Rl\" by \"execlp\"=========\n");
         execlp("ls", "ls", "-Rl", NULL);
         perror("execlp failed");
         return 1;
@@ -54,6 +56,7 @@ int main() {
     // Using execle
     pid = fork();
     if (pid == 0) {
+        printf("\n=========Executing \"ls -Rl\" by \"execle\"=========\n");
         execle("/bin/ls", "ls", "-Rl", NULL, envp);
         perror("execle failed");
         return 1;
@@ -64,6 +67,7 @@ int main() {
     // Using execv
     pid = fork();
     if (pid == 0) {
+        printf("\n=========Executing \"ls -Rl\" by \"execv\"=========\n");
         execv("/bin/ls", args);
         perror("execv failed");
         return 1;
@@ -74,6 +78,7 @@ int main() {
     // Using execvp
     pid = fork();
     if (pid == 0) {
+        printf("\n=========Executing \"ls -Rl\" by \"execvp\"=========\n");
         execvp("ls", args);
         perror("execvp failed");
         return 1;

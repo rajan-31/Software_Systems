@@ -30,12 +30,12 @@ int main()
         return 1;
     }
 
-    int num_records=5;
-    printf("How many records do you want to generate (atleast 5)? ");
-    scanf("%d", &num_records);
+    int num_records=3;
+    // printf("How many records do you want to generate (atleast 3)? ");
+    // scanf("%d", &num_records);
 
-    if(num_records < 5)
-        num_records = 5;
+    // if(num_records < 3)
+    //     num_records = 3;
 
     srand(time(0));
 

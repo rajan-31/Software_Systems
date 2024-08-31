@@ -125,7 +125,7 @@ int main() {
 
     lseek(fd,0,SEEK_SET);
 
-    int num_records = 5;
+    int num_records = 3;
     struct student st;
 
     printf("Records currently present: \n");

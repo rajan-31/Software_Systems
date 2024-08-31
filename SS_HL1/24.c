@@ -22,7 +22,7 @@ int main(){
     printf("Child process is running.\n");
     printf("Child procees id : %d\n",getpid());
     printf("Child Became Orphan.\n");
-    sleep(50);
+    sleep(5);
   }
   else{
     printf("Parent process is running\n");

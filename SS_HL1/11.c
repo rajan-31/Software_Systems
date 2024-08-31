@@ -37,6 +37,13 @@ int main(int argc, char const *argv[])
 		return 1;
 	}
 
+	// int fcntl(int fd, int cmd, ... /* arg */ );
+	int fd_dup3 = fcntl(fd, F_DUPFD, 0); // 0, to get lowest possible file descriptor
+	if(fd_dup3 == -1) {
+		perror("Error duplicating fd with fcntl()");
+		return 1;
+	}
+
 	/* ============================ */
 
 	char buff1[] = "line1\n";
@@ -53,12 +60,25 @@ int main(int argc, char const *argv[])
 		return 1;
 	}
 
-	char buff3[] = "line3";
+	char buff3[] = "line3\n";
 	int w3 = write(fd_dup2, buff3, strlen(buff3));
 	if(w3 == -1) {
 		perror("Error writing data using fd_dup2");
 		return 1;
 	}
+
+	char buff4[] = "line4\n";
+	int w4 = write(fd_dup3, buff4, strlen(buff4));
+	if(w4 == -1) {
+		perror("Error writing data using fd_dup3");
+		return 1;
+	}
+
+	/* ============================ */
+
+
+
+	/* ============================ */
 
 	close(fd);
 	close(fd_dup1);

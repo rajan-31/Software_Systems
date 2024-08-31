@@ -13,4 +13,6 @@
 # ================================================
 # */
 
+cat ./test_dir_01/test_file_03.txt
+
 od -c ./test_dir_01/test_file_03.txt

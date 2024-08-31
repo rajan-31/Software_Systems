@@ -32,6 +32,8 @@ int main() {
 
     /* ============================ */
 
+    printf("Waiting to aquire write lock...\n");
+
     // F_RDLCK, F_WRLCK, F_UNLCK
     lock.l_type = F_WRLCK;
     // F_SETLKW : Set Lock, Wait if necessary
@@ -52,6 +54,8 @@ int main() {
     printf("Write lock released.\n\n\n");
 
     /* ============================ */
+
+    printf("Waiting to aquire read lock...\n");
 
     lock.l_type = F_RDLCK;
     if (fcntl(fd, F_SETLKW, &lock) == -1) {

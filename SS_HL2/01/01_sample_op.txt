@@ -1,0 +1,21 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a separate program (for each time domain) to set a interval timer in 10sec and
+10micro second
+    a. ITIMER_REAL
+    b. ITIMER_VIRTUAL
+    c. ITIMER_PROF
+================================================
+*/
+
+$ ./a.out 01/01_a.c
+ITIMER_REAL signal received (SIGALRM): 14
+
+$ ./a.out 01/01_b.c
+ITIMER_VIRTUAL signal received (SIGVTALRM): 26
+
+$ ./a.out 01/01_c.c
+ITIMER_PROF signal received (SIGPROF): 27

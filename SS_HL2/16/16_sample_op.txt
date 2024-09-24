@@ -1,0 +1,17 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to send and receive data from parent to child vice versa. Use two way communication.
+================================================
+*/
+
+$ ./a.out 16/16.c
+Parent: Sent message to child: Hello from Parent!
+
+Child: Received message from parent => Hello from Parent!
+
+Child: Sent message to parent: Hello from Child!
+
+Parent: Received message from child => Hello from Child!

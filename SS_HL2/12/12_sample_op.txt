@@ -1,0 +1,26 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to create an orphan process. Use kill system call to send SIGKILL signal to the parent process from the child process.
+================================================
+*/
+
+$ ./a.out 12/12.c
+Parent process: PID = 6831, Child PID = 6832
+Parent process: running...
+Child  process: PID = 6832, Parent PID = 6831
+Parent process: running...
+Parent process: running...
+Parent process: running...
+Parent process: running...
+
+Child  process: sending SIGKILL to parent process (PID = 6831)
+Waiting for re-parenting, Current Parent PID = 6831
+Killed
+
+Child  process: After killing parent, new Parent PID = 1785
+
+Child  process: PID = 6832, Parent PID = 1785, running as an orphan
+Child  process: PID = 6832, Parent PID = 1785, running as an orphan

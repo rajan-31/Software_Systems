@@ -1,0 +1,17 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a simple program to create three threads.
+================================================
+*/
+
+$ ./a.out 06/06.c
+Thread 1 is running
+Thread 3 is running
+Thread 2 is running
+Thread 1 is finishing
+Thread 3 is finishing
+Thread 2 is finishing
+All threads are finished

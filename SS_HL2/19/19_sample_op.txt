@@ -1,0 +1,26 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Create a FIFO file by
+	a. mknod command
+	b. mkfifo command
+	c. use strace command to find out, which command (mknod or mkfifo) is better.
+	c. mknod system call
+	d. mkfifo library function
+================================================
+*/
+
+$ ls -l
+total 28
+-rw-rw-r-- 1 rajan rajan   647 Sep 20 19:08 19.c
+-rw-rw-r-- 1 rajan rajan   480 Sep 20 18:37 19_commands.sh
+-rw-rw-r-- 1 rajan rajan   329 Sep 20 18:59 19_sample_op.txt
+-rwxrwxr-x 1 rajan rajan 16040 Sep 20 19:06 a.out
+prw-rw-r-- 1 rajan rajan     0 Sep 20 18:29 my_fifo1
+prw-rw-r-- 1 rajan rajan     0 Sep 20 18:29 my_fifo2
+prw-rw-r-- 1 rajan rajan     0 Sep 20 18:35 my_fifo3
+prw-rw-r-- 1 rajan rajan     0 Sep 20 18:35 my_fifo4
+prw-rw-r-- 1 rajan rajan     0 Sep 20 19:06 my_fifo5
+prw-rw-r-- 1 rajan rajan     0 Sep 20 19:06 my_fifo6

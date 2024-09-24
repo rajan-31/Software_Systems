@@ -1,0 +1,12 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to print the maximum number of files can be opened within a process and size of a pipe (circular buffer)
+================================================
+*/
+
+$ ./a.out 23.c
+Maximum number of files that can be opened within a process: 1024
+Size of a pipe (circular buffer): 4096 bytes

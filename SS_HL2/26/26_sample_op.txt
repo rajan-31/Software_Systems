@@ -1,0 +1,16 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to send messages to the message queue. Check $ipcs -q
+================================================
+*/
+
+$ ipcs -q
+
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages
+0x410407c9 0          rajan      666        0            0
+0x410421af 1          rajan      666        0            0
+0x410421e9 2          rajan      666        100          1

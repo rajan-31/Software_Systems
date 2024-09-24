@@ -80,9 +80,12 @@ int main(int argc, char const *argv[])
 
 	/* ============================ */
 
+	printf("%d %d %d %d\n", fd, fd_dup1, fd_dup2, fd_dup3);
+
 	close(fd);
 	close(fd_dup1);
 	close(fd_dup2);
+	close(fd_dup3);
 
 	return 0;
 }

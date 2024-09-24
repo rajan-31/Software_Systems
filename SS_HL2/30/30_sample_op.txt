@@ -1,0 +1,28 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to create a shared memory.
+	a. write some data to the shared memory
+	b. attach with O_RDONLY and check whether you are able to overwrite.
+	c. detach the shared memory
+	d. remove the shared memory
+================================================
+*/
+
+$ ./a.out 30_a.c
+Data written to shared memory: Hello, shared memory!
+
+$ ./a.out 30_b.c
+Current content of shared memory: Hello, shared memory!
+Attempting to overwrite read-only shared memory...
+Segmentation fault (core dumped)
+
+
+$ ./a.out 30_c.c
+Attached to shared memory
+Detached from shared memory
+
+$ ./a.out 30_d.c
+Shared memory removed

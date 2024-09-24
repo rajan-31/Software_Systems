@@ -1,0 +1,16 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to create a semaphore and initialize value to the semaphore.
+	a. create a binary semaphore
+	b. create a counting semaphore
+================================================
+*/
+
+$ ./a.out 31_a.c
+Binary semaphore created and initialized to 1
+
+$ ./a.out 31_b.c
+Counting semaphore created and initialized to 5

@@ -1,0 +1,13 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write two programs so that both can communicate by FIFO -Use one way communication
+================================================
+*/
+
+$ ./a.out 20_1.c
+
+$ ./a.out 20_2.c
+Hello

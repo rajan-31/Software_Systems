@@ -1,0 +1,16 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to receive messages from the message queue.
+	a. with 0 as a flag
+	b. with IPC_NOWAIT as a flag
+================================================
+*/
+
+$ ./a.out 27_1.c
+Message sent to the queue: This is a test message!
+
+$ ./a.out 27_2.c
+Received message: This is a test message!

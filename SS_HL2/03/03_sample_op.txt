@@ -1,0 +1,16 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to set (any one) system resource limit. Use setrlimit system call
+================================================
+*/
+
+$ ./a.out 03/03.c
+Before setting new limits:
+Open File Descriptors      Soft Limit: 1024  Hard Limit: 1048576
+Successfully set new limits for open file descriptors.
+
+After setting new limits:
+Open File Descriptors      Soft Limit: 2048  Hard Limit: 4096

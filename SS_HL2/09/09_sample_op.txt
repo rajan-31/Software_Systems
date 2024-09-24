@@ -1,0 +1,16 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to ignore a SIGINT signal then reset the default action of the SIGINT signal - Use signal system call.
+================================================
+*/
+
+$ ./a.out 09/09.c
+SIGINT signal is now being ignored. Try pressing Ctrl+C.
+^C
+SIGINT signal restored to default action. Press Ctrl+C again to terminate the program.
+Running... Press Ctrl+C to exit.
+Running... Press Ctrl+C to exit.
+^C

@@ -1,0 +1,24 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to print the system resource limits. Use getrlimit system call
+================================================
+*/
+
+$ ./a.out 02/02.c
+System Resource Limits:
+
+Resource                   Soft Limit                 Hard Limit
+CPU Time (seconds)         Soft Limit: Unlimited  Hard Limit: Unlimited
+File Size (bytes)          Soft Limit: Unlimited  Hard Limit: Unlimited
+Data Segment Size (bytes)  Soft Limit: Unlimited  Hard Limit: Unlimited
+Stack Size (bytes)         Soft Limit: 8388608  Hard Limit: Unlimited
+Core File Size (bytes)     Soft Limit: 0  Hard Limit: Unlimited
+Resident Set Size (bytes)  Soft Limit: Unlimited  Hard Limit: Unlimited
+Open File Descriptors      Soft Limit: 1024  Hard Limit: 1048576
+Address Space (bytes)      Soft Limit: Unlimited  Hard Limit: Unlimited
+Max Processes              Soft Limit: 46436  Hard Limit: 46436
+Locked Memory (bytes)      Soft Limit: 1531588608  Hard Limit: 1531588608
+File Locks                 Soft Limit: Unlimited  Hard Limit: Unlimited

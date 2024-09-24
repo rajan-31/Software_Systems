@@ -1,0 +1,14 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a simple program to print the created thread ids
+================================================
+*/
+
+$ ./a.out 07/07.c
+Thread 1 has ID: 124080508372544
+Thread 2 has ID: 124080497886784
+Thread 3 has ID: 124080487401024
+All threads are finished

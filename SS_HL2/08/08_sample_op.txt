@@ -1,0 +1,27 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a separate program using signal system call to catch the following signals.
+	a. SIGSEGV
+	b. SIGINT
+	c. SIGFPE
+	d. SIGALRM (use alarm system call)
+	e. SIGALRM (use setitimer system call)
+	f. SIGVTALRM (use setitimer system call)
+	g. SIGPROF (use setitimer system call)
+================================================
+*/
+
+$ ./a.out 08/08.c
+Caught SIGVTALRM (Virtual Timer Alarm)
+Caught SIGALRM (Alarm Signal)
+Caught SIGPROF (Profiling Timer Alarm)
+^CCaught SIGINT (Interrupt Signal)
+
+$ ./a.out 08/08.c
+Caught SIGSEGV (Segmentation Fault)
+
+$ ./a.out 08/08.c
+Caught SIGFPE (Floating Point Exception)

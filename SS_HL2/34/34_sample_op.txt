@@ -1,0 +1,16 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to create a concurrent server.
+	a. use fork
+	b. use pthread_create
+================================================
+*/
+
+$ ./a.out 34_a.c
+Server listening on port 8080
+
+$ ./a.out 34_b.c
+Server listening on port 8080

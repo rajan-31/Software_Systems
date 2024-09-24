@@ -1,0 +1,17 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to communicate between two machines using socket
+================================================
+*/
+
+$ ./a.out 33_a.c
+Server listening on port 8080...
+Message from client: Hello from client!
+Response sent to client
+
+$ ./a.out 33_b.c
+Message sent from client
+Response from server: Hello from server!

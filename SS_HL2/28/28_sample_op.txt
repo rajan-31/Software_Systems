@@ -1,0 +1,12 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to change the exiting message queue permission. (use msqid_ds structure)
+================================================
+*/
+
+$ ./a.out 28.c
+Current permissions: 666
+Permissions changed to: 664

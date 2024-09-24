@@ -1,0 +1,11 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to measure how much time is taken to execute 100 getppid ( ) system call. Use time stamp counter
+================================================
+*/
+
+$ ./a.out 04/04.c
+Time taken for 100 getppid() calls: 25273 CPU cycles

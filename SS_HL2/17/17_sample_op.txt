@@ -1,0 +1,20 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to execute ls -l | wc.
+	a. use dup
+	b. use dup2
+	c. use fcntl
+================================================
+*/
+
+$ ./a.out 17/17_a.c
+     37     328    1759
+
+$ ./a.out 17/17_b.c
+     37     328    1759
+
+$ ./a.out 17/17_c.c
+     37     328    1759

@@ -1,0 +1,23 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a separate program using sigaction system call to catch the following signals.
+	a. SIGSEGV
+	b. SIGINT
+	c. SIGFPE
+================================================
+*/
+
+$ ./a.out 10/10.c
+Caught SIGFPE (Floating Point Exception). Error number: 0
+
+$ ./a.out 10/10.c
+Running... Press Ctrl+C to trigger SIGINT or trigger other signals.
+Running... Press Ctrl+C to trigger SIGINT or trigger other signals.
+Running... Press Ctrl+C to trigger SIGINT or trigger other signals.
+^CCaught SIGINT (Interrupt Signal). Pressed Ctrl+C.
+
+$ ./a.out 10/10.c
+Caught SIGSEGV (Segmentation Fault). Address causing fault: (nil)

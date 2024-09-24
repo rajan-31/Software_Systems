@@ -1,0 +1,13 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to create a message queue and print the key and message queue id
+================================================
+*/
+
+$ ./a.out 24.c
+File 'queuefile' created for ftok().
+Message Queue Key: 1090783177
+Message Queue ID: 0

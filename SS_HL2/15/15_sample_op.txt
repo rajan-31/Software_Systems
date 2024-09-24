@@ -1,0 +1,12 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a simple program to send some data from parent to the child process.
+================================================
+*/
+
+$ ./a.out 15/15.c
+Parent: Sending message to child...
+Child: Received message from parent: Hello from the parent!

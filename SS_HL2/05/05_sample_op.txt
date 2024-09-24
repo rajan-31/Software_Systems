@@ -1,0 +1,24 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to print the system limitation of
+	a. maximum length of the arguments to the exec family of functions.
+	b. maximum number of simultaneous process per user id.
+	c. number of clock ticks (jiffy) per second.
+	d. maximum number of open files
+	e. size of a page
+	f. total number of pages in the physical memory
+	g. number of currently available pages in the physical memory.
+================================================
+*/
+
+$ ./a.out 05/05.c
+Maximum length of arguments for exec: 2097152 bytes
+Maximum number of simultaneous processes per user ID: 46436
+Number of clock ticks per second: 100
+Maximum number of open files: Soft limit = 1024, Hard limit = 1048576
+Page size: 4096 bytes
+Total number of pages in physical memory: 2991390
+Number of currently available pages in physical memory: 1299620

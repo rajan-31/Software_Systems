@@ -1,0 +1,89 @@
+/*
+================================================
+Author : Rajan Khade
+
+Description :
+Write a program to implement semaphore to protect any critical section.
+	a. rewrite the ticket number creation program using semaphore
+	b. protect shared memory from concurrent write access
+	c. protect multiple pseudo resources ( may be two) using counting semaphore
+	d. remove the created semaphore
+================================================
+*/
+
+$ ./a.out 32_a.c
+Created ticket number: 1
+Created ticket number: 2
+Created ticket number: 3
+Created ticket number: 4
+Created ticket number: 5
+Created ticket number: 6
+Created ticket number: 7
+Created ticket number: 8
+Created ticket number: 9
+Created ticket number: 10
+Created ticket number: 11
+Created ticket number: 12
+Created ticket number: 13
+Created ticket number: 14
+Created ticket number: 15
+Created ticket number: 16
+Created ticket number: 17
+Created ticket number: 18
+Created ticket number: 19
+Created ticket number: 20
+
+$ ./a.out 32_b.c
+Writer 0 wrote: 1
+Writer 1 wrote: 2
+Writer 2 wrote: 3
+Writer 0 wrote: 4
+Writer 2 wrote: 5
+Writer 1 wrote: 6
+Writer 2 wrote: 7
+Writer 0 wrote: 8
+Writer 1 wrote: 9
+Writer 2 wrote: 10
+Writer 0 wrote: 11
+Writer 1 wrote: 12
+Writer 2 wrote: 13
+Writer 1 wrote: 14
+Writer 0 wrote: 15
+
+$ ./a.out 32_c.c
+Thread 1 is using a resource.
+Thread 0 is using a resource.
+Thread 1 released a resource.
+Thread 1 is using a resource.
+Thread 0 released a resource.
+Thread 0 is using a resource.
+Thread 1 released a resource.
+Thread 1 is using a resource.
+Thread 0 released a resource.
+Thread 0 is using a resource.
+Thread 1 released a resource.
+Thread 1 is using a resource.
+Thread 0 released a resource.
+Thread 0 is using a resource.
+Thread 1 released a resource.
+Thread 1 is using a resource.
+Thread 0 released a resource.
+Thread 0 is using a resource.
+Thread 1 released a resource.
+Thread 0 released a resource.
+Thread 2 is using a resource.
+Thread 2 released a resource.
+Thread 2 is using a resource.
+Thread 2 released a resource.
+Thread 2 is using a resource.
+Thread 2 released a resource.
+Thread 2 is using a resource.
+Thread 2 released a resource.
+Thread 2 is using a resource.
+Thread 2 released a resource.
+
+$ ./a.out 32_d.c
+Thread 0 is doing something.
+Thread 0 finished.
+Thread 1 is doing something.
+Thread 1 finished.

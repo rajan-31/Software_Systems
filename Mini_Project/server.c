@@ -14,6 +14,7 @@
 #include "./lib/common.h"
 #include "./lib/server.h"
 #include "./lib/admin.h"
+#include "./lib/customer.h"
 
 const int PORT = 8080;
 const int REQUESTS_QUEUE_SIZE = 100;
@@ -43,13 +44,20 @@ void *handle_client(void *arg) {
 
         do_active_session_print(active_sessions, MAX_ACTIVE_SESSIONS, &mutex_active_sessions);
 
+        
+        if(active_session_assign == 1) {
+            if(user_role == ADMIN_E) {
+                handle_admin_login(&client_socket, username);
+            } else if(user_role == MANAGER_E) {
+                // handle_manager_login(&client_socket, username);
+            } else if(user_role == EMPLOYEE_E) {
+                // handle_employee_login(&client_socket, username);
+            } else if(user_role == CUSTOMER_E) {
+                handle_customer_login(&client_socket, username);
+            }
 
-        if(user_role == ADMIN_E) {
-            handle_admin_login(&client_socket, username);
+            do_active_session_remove(active_sessions, MAX_ACTIVE_SESSIONS, &mutex_active_sessions, username);
         }
-
-
-        do_active_session_remove(active_sessions, MAX_ACTIVE_SESSIONS, &mutex_active_sessions, username);
 
         do_active_session_print(active_sessions, MAX_ACTIVE_SESSIONS, &mutex_active_sessions);
     }

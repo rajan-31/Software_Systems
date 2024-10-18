@@ -7,7 +7,7 @@
 #include "./lib/schema.h"
 #include "./lib/common.h"
 
-void clear_data_and_init() {
+void clear_data_and_init_admin() {
     int fd1=open("./data/admin.dat", O_RDWR | O_CREAT | O_TRUNC, 0644);
     if(fd1==-1) {
         perror("Error opening file");
@@ -24,6 +24,10 @@ void clear_data_and_init() {
     }
 
 
+    close(fd1);
+}
+
+void clear_data_and_init_employee() {
     int fd2=open("./data/employee.dat", O_RDWR | O_CREAT | O_TRUNC, 0644);
     if(fd2==-1) {
         perror("Error opening file");
@@ -40,7 +44,10 @@ void clear_data_and_init() {
         write(fd2, &employee_data, sizeof(struct Employee_S));
     }
 
+    close(fd2);
+}
 
+void clear_data_and_init_customer() {
     int fd3=open("./data/customer.dat", O_RDWR | O_CREAT | O_TRUNC, 0644);
     if(fd3==-1) {
         perror("Error opening file");
@@ -59,11 +66,10 @@ void clear_data_and_init() {
         write(fd3, &customer_data, sizeof(struct Customer_S));
     }
 
-
-    close(fd1);
-    close(fd2);
     close(fd3);
 }
+
+
 
 void print_all() {
     int fd1=open("./data/admin.dat", O_RDONLY);
@@ -111,14 +117,34 @@ void print_all() {
 }
 
 int main() {
-    printf("What to do? \n1. Clear data and init \n2. Print all \n3. Exit \n\nChoice: ");
-    int choice;
-    scanf("%d", &choice);
+    char *INIT_OPTIONS = \
+    "What to do?\n\n"
+    "1. Clear data and init admin\n"
+    "2. Clear data and init employee\n"
+    "3. Clear data and init customer\n"
+    "*. Print all\n"
+    "\nChoice: ";
 
-    if(choice == 1) {
-        clear_data_and_init();
-    } else if(choice == 2) {
+    printf("%s", INIT_OPTIONS);
+    int choice; scanf("%d", &choice);
+
+
+    switch (choice) {
+    case 1:
+        clear_data_and_init_admin();
+        break;
+
+    case 2:
+        clear_data_and_init_employee();
+        break;
+
+    case 3:
+        clear_data_and_init_customer();
+        break;
+    
+    default:
         print_all();
+        break;
     }
 
     return 0;    

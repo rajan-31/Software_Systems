@@ -10,6 +10,7 @@
 
 #include "./lib/schema.h"
 #include "./lib/admin_client.h"
+#include "./lib/customer_client.h"
 
 int main() {
     goto_connect:
@@ -35,7 +36,7 @@ int main() {
     }
     printf("%s", buffer1);
 
-    int user_role = 1;
+    int user_role = 4;
     // scanf("%d", &user_role);
     write(client_fd, &user_role, sizeof(user_role));
 
@@ -47,7 +48,7 @@ int main() {
         read(client_fd, &buffer2, sizeof(buffer2));
         printf("%s", buffer2);
 
-        char username[USERNAME_LEN] = "admin1";
+        char username[USERNAME_LEN] = "cus1";
         // scanf("%s", username);
         write(client_fd, &username, sizeof(username));
         
@@ -59,7 +60,7 @@ int main() {
             read(client_fd, &buffer3, sizeof(buffer3));
             printf("%s", buffer3);
 
-            char password[PASSWORD_LEN] = "111111";
+            char password[PASSWORD_LEN] = "123456";
             // scanf("%s", password);
             write(client_fd, &password, sizeof(password));
 
@@ -75,6 +76,12 @@ int main() {
             } else if(verify_user_password_status == 1) {
                 if(user_role == 1) {
                     do_goto_connect = handle_admin_menu(&client_fd, username, password);
+                } else if(user_role == 2) {
+                    // do_goto_connect = handle_admin_menu(&client_fd, username, password);
+                } else if(user_role == 3) {
+                    // do_goto_connect = handle_admin_menu(&client_fd, username, password);
+                } else if(user_role == 4) {
+                    do_goto_connect = handle_customer_menu(&client_fd, username, password);
                 }
             }
 

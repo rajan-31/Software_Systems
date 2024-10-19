@@ -90,7 +90,7 @@ void customer_add_to_transaction_history(struct Transaction_S tx) {
 
     lock.l_type = F_UNLCK;
     fcntl(fd, F_SETLK, &lock);
-    close(fd);    
+    close(fd);
 }
 
 // -2: insufficient balance, -1: failed, 1: balance changed
@@ -169,6 +169,7 @@ int customer_change_balance(char *username, float amount) {
         customer_add_to_transaction_history(tx);
     }
 
+    close(fd);
     return result;
 }
 
@@ -364,6 +365,129 @@ void customer_view_transaction_history(int *client_socket, char *username) {
 
     free(tx_history);
 }
+
+int customer_apply_for_loan(int *client_socket, char *username) {
+    struct Loan_Account_S loan_account;
+    read(*client_socket, &loan_account, sizeof(loan_account));
+
+    strcpy(loan_account.username, username);
+
+    int fd = open("./data/loan.dat", O_WRONLY | O_APPEND);
+    if (fd == -1) {
+        perror("Error opening loan.dat file");
+        return -1;
+    }
+
+    struct flock lock;
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_END;
+    lock.l_start = 0;
+    lock.l_len = sizeof(struct Loan_Account_S);
+    fcntl(fd, F_SETLKW, &lock);
+
+    write(fd, &loan_account, sizeof(struct Loan_Account_S));
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd, F_SETLK, &lock);
+    close(fd);
+
+    return 1;
+}
+
+int customer_change_password(int *client_socket, char *username) {
+    int is_password_confirmed = -1;
+    read(*client_socket, &is_password_confirmed, sizeof(is_password_confirmed));
+
+    if(is_password_confirmed != 1)
+        return 0;
+
+    
+    // =======================================
+    char new_password[PASSWORD_LEN];
+    read(*client_socket, &new_password, sizeof(new_password));
+
+    int fd = open("./data/customer.dat", O_RDWR);
+    if (fd == -1) {
+        perror("Error opening customer.dat file");
+        return -1;
+    }
+
+    int result = -1;
+    int idx = -1;
+    int flag = 0;
+
+    struct Customer_S temp;
+    while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
+        idx++;
+        if (strcmp(temp.username, username) == 0) {
+            flag = 1;   // match found
+            break;
+        }
+    }
+
+    // =======================================
+    // lock => modify
+    if(flag == 1) {
+        struct flock lock;
+        lock.l_type = F_WRLCK;
+        lock.l_whence = SEEK_SET;
+        lock.l_start = idx * sizeof(struct Customer_S);
+        lock.l_len = sizeof(struct Customer_S);
+
+        fcntl(fd, F_SETLKW, &lock);
+
+
+        lseek(fd, idx * sizeof(struct Customer_S), SEEK_SET);
+        read(fd, &temp, sizeof(struct Customer_S));
+
+        lseek(fd, -1 * sizeof(struct Customer_S), SEEK_CUR);
+
+        strcpy(temp.password, new_password);
+        write(fd, &temp, sizeof(struct Customer_S));
+
+        lock.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &lock);
+        result = 1;
+    }
+
+    close(fd);
+
+    printf("res: %d\n", result);
+    return result;
+}
+
+
+int customer_add_feedback(int *client_socket, char *username) {
+    char feedback_content[FEEDBACK_CONTENT_LEN];
+    read(*client_socket, &feedback_content, sizeof(feedback_content));
+
+    int fd = open("./data/feedback.dat", O_WRONLY | O_APPEND);
+    if (fd == -1) {
+        perror("Error opening feedback.dat file");
+        return -1;
+    }
+
+    struct Feedback_S fb;
+    strcpy(fb.username, username);
+    strcpy(fb.content, feedback_content);
+    fb.seen = 0;
+
+    struct flock lock;
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_END;
+    lock.l_start = 0;
+    lock.l_len = sizeof(struct Feedback_S);
+    fcntl(fd, F_SETLKW, &lock);
+
+    write(fd, &fb, sizeof(struct Feedback_S));
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd, F_SETLK, &lock);
+    close(fd);
+
+    return 1;
+}
+
 // =======================================
 
 void handle_customer_menu(int *client_socket, struct Customer_S *customer_data) {
@@ -395,13 +519,16 @@ void handle_customer_menu(int *client_socket, struct Customer_S *customer_data) 
             break;
 
         case 5:
-            // Apply loan
+            status = customer_apply_for_loan(client_socket, customer_data->username);
+            write(*client_socket, &status, sizeof(status));
             break;
         case 6:
-            // change pass
+            status = customer_change_password(client_socket, customer_data->username);
+            write(*client_socket, &status, sizeof(status));
             break;
         case 7:
-            // feedback
+            status = customer_add_feedback(client_socket, customer_data->username);
+            write(*client_socket, &status, sizeof(status));
             break;
         case 8:
             customer_view_transaction_history(client_socket, customer_data->username);

@@ -120,6 +120,114 @@ void customer_view_transaction_history(int *client_fd) {
     }
 }
 
+void customer_apply_for_loan(int *client_fd) {
+    struct Loan_Account_S loan_account;
+
+    strcpy(loan_account.loan_acc_num, "");
+    strcpy(loan_account.assigned_employee, "");
+    loan_account.credit_score = 0;
+    loan_account.interest_rate = 0;
+    loan_account.processed = 0;
+    loan_account.accepted = 0;
+
+    printf("\n\nLoan Application\n\n");
+
+    // do {
+        printf("\nLoan Type: \n1. Personal Loan \n2. Education Loan \n3. Car Loan \n4. Home Loan \n5. Other\n\nChoice: ");
+        scanf("%u", &loan_account.type);
+
+    //     if(loan_account.type > 5 || loan_account.type <= 0) {
+    //         printf("\nInvalid Loan Type!\n");
+    //     }
+    // } while(loan_account.type > 5 || loan_account.type <= 0);
+
+    // do {
+        printf("\nLoan Amount: "); 
+        scanf("%f", &loan_account.loan_amount);
+        
+    //     if(loan_account.loan_amount <= 0) {
+    //         printf("\nInvalid Loan Amount!\n");
+    //     }
+
+    //     printf("%f\n", loan_account.loan_amount);
+    // } while(loan_account.loan_amount <= 0);
+
+    // do {
+        printf("\nLoan Repayment Duration (Months): "); 
+        scanf("%u", &loan_account.loan_repayment_duration_months);
+
+    //     if(loan_account.loan_repayment_duration_months <= 0) {
+    //         printf("\nInvalid Loan Repayment Duration!\n");
+    //     }
+    // } while(loan_account.loan_repayment_duration_months <= 0);
+
+    // do {
+        printf("\nYour Annual Income: "); 
+        scanf("%u", &loan_account.annual_income);
+
+    //     if(loan_account.annual_income <= 0) {
+    //         printf("\nInvalid Annual Income!\n");
+    //     }
+    // } while(loan_account.annual_income <= 0);
+
+    
+    write(*client_fd, &loan_account, sizeof(struct Loan_Account_S));
+    int status = -1;
+    read(*client_fd, &status, sizeof(status));
+
+    if(status == -1) {
+        printf("\n\n***Loan Application Submission Failed!***");
+    } else if(status == 0) {
+        printf("\n\n***Loan Application Submission Failed (Invalid Data Provided)!***");
+    } else if(status == 1) {
+        printf("\n\n***Loan Application Sumitted***");
+    }
+}
+
+void customer_change_password(int *client_fd) {
+    char password_1[PASSWORD_LEN];
+    char password_2[PASSWORD_LEN];
+    printf("Enter New Password: "); scanf("%s", password_1);
+    printf("Confirm New Password: "); scanf("%s", password_2);
+
+    int is_password_confirmed = -1;
+    if(strcmp(password_1, password_2) == 0) {
+        is_password_confirmed = 1;
+        write(*client_fd, &is_password_confirmed, sizeof(is_password_confirmed));
+
+        write(*client_fd, &password_1, sizeof(password_1));
+    } else {
+        is_password_confirmed = 0;
+        write(*client_fd, &is_password_confirmed, sizeof(is_password_confirmed));
+    }
+
+    int status = -1;
+    read(*client_fd, &status, sizeof(status));
+
+    if(status == -1) {
+        printf("Failed to Change Password!\n");
+    } else if(status == 0) {
+        printf("New Password Missmatched!\n");
+    } else if(status == 1) {
+        printf("Password Changed\n");
+    }
+}
+
+void customer_add_feedback(int *client_fd) {
+    char feedback_content[FEEDBACK_CONTENT_LEN];
+    printf("\nEnter Your Feedback: \n"); scanf(" %[^\n]", feedback_content);
+    write(*client_fd, &feedback_content, sizeof(feedback_content));
+
+    int status = -1;
+    read(*client_fd, &status, sizeof(status));
+
+    if(status == -1) {
+        printf("\nFailed to Submit Feedback!\n");
+    }else if(status == 1) {
+        printf("\nFeedback Submitted Successfully.\nThank You!\n");
+    }
+}
+
 int handle_customer_menu(int *client_fd, char *username, char *password){
     char buffer1[1000] = {0};
     read(*client_fd, &buffer1, sizeof(buffer1));
@@ -148,13 +256,13 @@ int handle_customer_menu(int *client_fd, char *username, char *password){
             break;
 
         case 5:
-            // Apply loan
+            customer_apply_for_loan(client_fd);
             break;
         case 6:
-            // change pass
+            customer_change_password(client_fd);
             break;
         case 7:
-            // feedback
+            customer_add_feedback(client_fd);
             break;
         case 8:
             customer_view_transaction_history(client_fd);

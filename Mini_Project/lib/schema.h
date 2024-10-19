@@ -9,8 +9,12 @@
 #define TRANSACTION_ID_LENGTH 37
 
 // XXXX_E, to start actual values from 1
-enum role_type {XXXX_E, ADMIN_E, MANAGER_E, EMPLOYEE_E, CUSTOMER_E};
+enum role_type {XXXX_ROLE_E, ADMIN_E, MANAGER_E, EMPLOYEE_E, CUSTOMER_E};
+
 enum transaction_type {CREDIT_E, DEBIT_E};
+
+// XXXX_E, to start actual values from 1
+enum loan_type {XXXX_LOAN_E, PERSONAL_LOAN_E, EDUCATION_LOAN_E, VEHICLE_LOAN_E, HOME_LOAN_E, OTHER_LOAN_E};
 
 struct Session_S {
     int socket_fd;
@@ -40,14 +44,22 @@ struct Customer_S {
     float savings_acc_balance;
 };
 
-struct Loan_Acoount_S {
+struct Loan_Account_S {
     char username[USERNAME_LEN];
-
     char loan_acc_num[ACCOUNT_NUM_LEN];
-    float loan_acc_balance;
 
+    // ask user
+    enum loan_type type;
+    float loan_amount;
+    unsigned int loan_repayment_duration_months;
+    unsigned int annual_income;
+
+    // ask manager
     char assigned_employee[USERNAME_LEN];
 
+    // ask employee
+    unsigned int credit_score;
+    unsigned int interest_rate;
     int processed;
     int accepted;
 };
@@ -68,5 +80,6 @@ struct Transaction_S {
 struct Feedback_S {
     char username[USERNAME_LEN];
     char content[FEEDBACK_CONTENT_LEN];
+    int seen;
 };
 

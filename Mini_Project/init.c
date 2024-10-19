@@ -106,7 +106,35 @@ void clear_data_and_init_transaction_history() {
     close(fd);
 }
 
+void clear_data_loan() {
+    int fd = open("./data/loan.dat", O_RDWR | O_CREAT | O_TRUNC, 0644);
+    if(fd == -1) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
 
+    close(fd);
+}
+
+void clear_data_transaction_history() {
+    int fd = open("./data/transaction.dat", O_RDWR | O_CREAT | O_TRUNC, 0644);
+    if(fd == -1) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    close(fd);
+}
+
+void clear_data_feedback() {
+    int fd = open("./data/feedback.dat", O_RDWR | O_CREAT | O_TRUNC, 0644);
+    if(fd == -1) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    close(fd);
+}
 
 void print_all() {
     int fd1=open("./data/admin.dat", O_RDONLY);
@@ -181,9 +209,58 @@ void print_all() {
     }
 
 
+    int fd5=open("./data/loan.dat", O_RDONLY);
+    if(fd5==-1) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+    printf("\n======== Loan Application ========\n");
+    printf("%-15s %-15s %-14s %-12s %-10s %-10s %-15s %-10s %-10s %-10s %-10s\n",
+        "username", "acc", "type", "amount", "duration", "annual_inc", "employee", "credit_sc", "interest", "processed", "accepted"
+    );
+    struct Loan_Account_S loan_account;
+    while (read(fd5, &loan_account, sizeof(struct Loan_Account_S))) {
+        printf("%-15s %-15s %-14s %-12.2f %-10d %-10d %-15s %-10d %-10d %-10d %-10d\n",
+            loan_account.username,
+            loan_account.loan_acc_num,
+            loan_account.type == HOME_LOAN_E ? "Home Loan" :
+            loan_account.type == PERSONAL_LOAN_E ? "Personal Loan" :
+            loan_account.type == EDUCATION_LOAN_E ? "Education Loan" :
+            loan_account.type == VEHICLE_LOAN_E ? "Vehicle Loan" :
+            loan_account.type == HOME_LOAN_E ? "Home Loan" :
+            loan_account.type == OTHER_LOAN_E ? "Other Loan" : "Unknown",
+            loan_account.loan_amount,
+            loan_account.loan_repayment_duration_months,
+            loan_account.annual_income,
+            loan_account.assigned_employee,
+            loan_account.credit_score,
+            loan_account.interest_rate,
+            loan_account.processed,
+            loan_account.accepted);
+    }
+
+
+    printf("\n======== Feedbacks ========\n");
+
+    int fd6=open("./data/feedback.dat", O_RDONLY);
+    if(fd6==-1) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("\nuname\tseen\tcontent\n");
+    struct Feedback_S feedback_data;
+    while(read(fd6, &feedback_data, sizeof(struct Feedback_S))) {
+        printf("%s\t%d\t%s\n", feedback_data.username, feedback_data.seen, feedback_data.content);
+    }
+
+
     close(fd1);
     close(fd2);
     close(fd3);
+    close(fd4);
+    close(fd5);
+    close(fd6);
 }
 
 int main() {
@@ -193,6 +270,9 @@ int main() {
     "2. Clear data and init employee\n"
     "3. Clear data and init customer\n"
     "4. Clear data and init transaction history\n"
+    "5. Clear data loan\n"
+    "6. Clear data transaction history\n"
+    "7. Clear data feedback\n"
     "*. Print all\n"
     "\nChoice: ";
 
@@ -214,6 +294,17 @@ int main() {
         break;
     case 4:
         clear_data_and_init_transaction_history();
+        break;
+    case 5:
+        clear_data_loan();
+        break;
+
+    case 6:
+        clear_data_transaction_history();
+        break;
+
+    case 7:
+        clear_data_feedback();
         break;
     
     default:

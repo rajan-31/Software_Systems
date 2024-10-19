@@ -37,14 +37,14 @@ char *MANAGER_MENU_MSG = \
 // customer
 char *CUSTOMER_MENU_MSG = \
     "\n\nCustomer Menu\n"
-    "1. View Balance\n"
-    "2. Withdraw Money\n"
-    "3. Deposit Money\n"
-    "4. Transfer Funds\n"
-    "5. Apply for Loan\n"
-    "6. Change Password\n"
-    "7. Add Feedback\n"
-    "8. View Transaction History\n"
-    "9. Logout\n"
+    " 1. View Balance\n"
+    " 2. Withdraw Money\n"
+    " 3. Deposit Money\n"
+    " 4. Transfer Funds\n"
+    " 5. Apply for Loan\n"
+    " 6. Change Password\n"
+    " 7. Add Feedback\n"
+    " 8. View Transaction History\n"
+    " 9. Logout\n"
     "10. Exit\n"
     "\nChoose Operation: ";

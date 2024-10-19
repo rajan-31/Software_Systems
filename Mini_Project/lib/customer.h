@@ -73,6 +73,25 @@ int customer_verify_password(char *username, char *password, struct Customer_S *
     return result;
 }
 
+void customer_add_to_transaction_history(struct Transaction_S tx) {
+    int fd = open("./data/transaction.dat", O_WRONLY | O_APPEND);
+    if (fd == -1) {
+        perror("Error opening transaction.dat file");
+    }
+
+    struct flock lock;
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_END;
+    lock.l_start = 0;
+    lock.l_len = sizeof(struct Transaction_S);
+    fcntl(fd, F_SETLKW, &lock);
+
+    write(fd, &tx, sizeof(struct Transaction_S));
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd, F_SETLK, &lock);
+    close(fd);    
+}
 
 // -2: insufficient balance, -1: failed, 1: balance changed
 int customer_change_balance(char *username, float amount) {
@@ -128,6 +147,28 @@ int customer_change_balance(char *username, float amount) {
         fcntl(fd, F_SETLKW, &lock);
     }
 
+    if(result == 1) {
+        struct Transaction_S tx;
+        
+        strcpy(tx.transaction_id, gen_uuid());
+        tx.timestamp = time(NULL);
+        if(amount < 0) {
+            tx.amount = -1 * amount;
+            tx.t_type = DEBIT_E;
+        } else {
+            tx.amount = amount;
+            tx.t_type = CREDIT_E;
+        }
+        
+        strcpy(tx.payer, username);
+        strcpy(tx.payee, username);
+
+        tx.payer_balance = temp.savings_acc_balance;
+        tx.payee_balance = temp.savings_acc_balance;
+
+        customer_add_to_transaction_history(tx);
+    }
+
     return result;
 }
 
@@ -155,6 +196,176 @@ int customer_deposit_money(int *client_socket, char *username) {
 }
 
 
+// =======================================
+
+// -1: failed
+int customer_lock_account_by_username(int fd, char *username, struct flock *lock) {
+    int record_pos = -1;
+    struct Customer_S record;
+
+    lseek(fd, 0, SEEK_SET);
+    while (read(fd, &record, sizeof(struct Customer_S)) > 0) {
+        record_pos++;
+        if (strcmp(record.username, username) == 0) {
+            lock->l_type = F_WRLCK;
+            lock->l_whence = SEEK_SET;
+            lock->l_start = record_pos * sizeof(struct Customer_S);
+            lock->l_len = sizeof(struct Customer_S);
+
+            if (fcntl(fd, F_SETLKW, lock) == -1) {
+                return -1;
+            }
+
+            return record_pos;
+        }
+    }
+    printf("no record matched\n");
+    return -1;
+}
+
+void customer_release_lock_by_position(int fd, int record_pos, struct flock *lock) {
+    lock->l_type = F_UNLCK;
+    lock->l_whence = SEEK_SET;
+    lock->l_start = record_pos * sizeof(struct Customer_S);
+    lock->l_len = sizeof(struct Customer_S);
+    fcntl(fd, F_SETLKW, lock);  // Release lock
+}
+
+// -2: insufficient balance, 0: Invalid Amount; -1: failed, 1: transferred
+int customer_transfer_funds(int *client_socket, char *username) {
+    char payer_u[USERNAME_LEN]; strcpy(payer_u, username);
+    char payee_u[USERNAME_LEN];
+    read(*client_socket, &payee_u, sizeof(payee_u));
+
+    float amount_to_transfer = 0;
+    read(*client_socket, &amount_to_transfer, sizeof(amount_to_transfer));
+
+    if(amount_to_transfer <= 0)
+        return 0;
+
+    // =======================================
+
+    int fd = open("./data/customer.dat", O_RDWR);
+
+    struct flock lock;
+
+    /* 
+        To avoid starvation keep fix order while locking => Consistent Locking 
+    */
+    int first_pos = -1, second_pos = -1;
+    
+    char first_u[USERNAME_LEN]; 
+    strcpy(first_u, strcmp(payer_u, payee_u) < 0 ? payer_u : payee_u);
+    char second_u[USERNAME_LEN]; 
+    strcpy(second_u, strcmp(payer_u, payee_u) < 0 ? payee_u : payer_u);
+    
+    // lock first_u
+    first_pos = customer_lock_account_by_username(fd, first_u, &lock);
+    if (first_pos == -1) {
+        printf("Error locking first account.\n");
+        close(fd);
+        return -1;
+    }
+
+    // lock second_u
+    second_pos = customer_lock_account_by_username(fd, second_u, &lock);
+    if (second_pos == -1) {
+        printf("Error locking second account.\n");
+        customer_release_lock_by_position(fd, first_pos, &lock);
+        close(fd);
+        return -1;
+    }
+
+    // =======================================
+    int payer_pos = strcmp(payer_u, payee_u) < 0 ? first_pos : second_pos;
+    int payee_pos = strcmp(payer_u, payee_u) < 0 ? second_pos : first_pos;
+
+
+    struct Customer_S payer_record, payee_record;
+
+    lseek(fd, payer_pos * sizeof(struct Customer_S), SEEK_SET);
+    read(fd, &payer_record, sizeof(struct Customer_S));
+
+    lseek(fd, payee_pos * sizeof(struct Customer_S), SEEK_SET);
+    read(fd, &payee_record, sizeof(struct Customer_S));
+
+    int result = -1;
+    if(payer_record.savings_acc_balance < amount_to_transfer) {
+        result = -2;
+    } else {
+        payer_record.savings_acc_balance-=amount_to_transfer;
+        payee_record.savings_acc_balance+=amount_to_transfer;
+
+        lseek(fd, payer_pos * sizeof(struct Customer_S), SEEK_SET);
+        write(fd, &payer_record, sizeof(struct Customer_S));
+
+        lseek(fd, payee_pos * sizeof(struct Customer_S), SEEK_SET);
+        write(fd, &payee_record, sizeof(struct Customer_S));
+
+        result = 1;
+
+        // =======================================
+        
+        struct Transaction_S tx;
+
+        strcpy(tx.transaction_id, gen_uuid());
+        tx.timestamp = time(NULL);
+        tx.amount = amount_to_transfer;
+        tx.t_type = DEBIT_E;
+
+        strcpy(tx.payer, payer_u);
+        strcpy(tx.payee, payee_u);
+
+        tx.payer_balance = payer_record.savings_acc_balance;
+        tx.payee_balance = payee_record.savings_acc_balance;
+
+        customer_add_to_transaction_history(tx);
+    }
+
+    customer_release_lock_by_position(fd, first_pos, &lock);
+    customer_release_lock_by_position(fd, second_pos, &lock);
+    close(fd);
+
+    return result;
+}
+
+void customer_view_transaction_history(int *client_socket, char *username) {
+    int tx_history_capacity = 100;
+    struct Transaction_S *tx_history = (struct Transaction_S *) malloc(tx_history_capacity * sizeof(struct Transaction_S));
+
+    int fd = open("./data/transaction.dat", O_RDONLY);
+
+    struct Transaction_S temp;
+    int tx_history_size = 0;
+    while(read(fd, &temp, sizeof(struct Transaction_S)) > 0) {
+        if(tx_history_size >= tx_history_capacity) {
+            tx_history_capacity *= 2;
+            struct Transaction_S *new_tx_history = realloc(tx_history, tx_history_capacity * sizeof(struct Transaction_S));
+            tx_history = new_tx_history;
+        }
+
+        if(strcmp(temp.payer, temp.payee) == 0) {
+
+        } else if(strcmp(temp.payer, username) == 0) {
+            temp.payee_balance = -1;
+        } else if(strcmp(temp.payee, username) == 0) {
+            temp.payer_balance = -1;
+        }
+
+        tx_history[tx_history_size++] = temp;
+    }
+
+    close(fd);
+
+    write(*client_socket, &tx_history_size, sizeof(tx_history_size));
+    if(tx_history_size > 0) {
+        write(*client_socket, tx_history, tx_history_size * sizeof(struct Transaction_S));
+    }
+
+    free(tx_history);
+}
+// =======================================
+
 void handle_customer_menu(int *client_socket, struct Customer_S *customer_data) {
     write(*client_socket, CUSTOMER_MENU_MSG, strlen(CUSTOMER_MENU_MSG));
 
@@ -179,23 +390,24 @@ void handle_customer_menu(int *client_socket, struct Customer_S *customer_data) 
             break;
             
         case 4:
-            // status = customer_deposit_money(client_socket, customer_data->username);
-            // write(*client_socket, &status, sizeof(status));
+            status = customer_transfer_funds(client_socket, customer_data->username);
+            write(*client_socket, &status, sizeof(status));
             break;
 
         case 5:
-            // status = admin_manage_user_roles(client_socket);
-            // write(*client_socket, &status, sizeof(status));
+            // Apply loan
             break;
         case 6:
-            // status = admin_change_password(client_socket);
-            // write(*client_socket, &status, sizeof(status));
+            // change pass
             break;
         case 7:
+            // feedback
             break;
         case 8:
+            customer_view_transaction_history(client_socket, customer_data->username);
             break;
         case 9:
+            // Logout
             break;
         }
 

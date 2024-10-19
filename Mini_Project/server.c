@@ -37,7 +37,7 @@ void *handle_client(void *arg) {
         write(client_socket, MAIN_MENU_ASK_USERNAME, strlen(MAIN_MENU_ASK_USERNAME));
 
         char username[USERNAME_LEN];
-        read(client_socket, &username, sizeof(username));
+        int temp = read(client_socket, &username, sizeof(username));
 
         int active_session_assign = do_active_session_assign(active_sessions, MAX_ACTIVE_SESSIONS, &mutex_active_sessions, username, &client_socket);
         write(client_socket, &active_session_assign, sizeof(active_session_assign));

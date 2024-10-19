@@ -46,12 +46,19 @@ void do_active_session_remove(struct Session_S *active_sessions, int n, pthread_
 void do_active_session_print(struct Session_S *active_sessions, int n, pthread_mutex_t *mutex_active_sessions) {
     pthread_mutex_lock(mutex_active_sessions);
 
+    int count = 0;
+
     printf("\nPrinting active sessions: \n");
     for(int i=0; i<=n-1; i++) {
         if(active_sessions[i].username[0] != '\0') {
-            printf("Username: %s\tSocket_fd: %d\n\n", active_sessions[i].username, active_sessions[i].socket_fd);
+            printf("Username: %s\tSocket_fd: %d\n", active_sessions[i].username, active_sessions[i].socket_fd);
+            count++;
         }
     }
+
+    if (count == 0)
+        printf("No Active Session!\n");
+    
 
     pthread_mutex_unlock(mutex_active_sessions);
 }

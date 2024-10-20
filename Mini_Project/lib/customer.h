@@ -345,15 +345,21 @@ void customer_view_transaction_history(int *client_socket, char *username) {
             tx_history = new_tx_history;
         }
 
-        if(strcmp(temp.payer, temp.payee) == 0) {
-
-        } else if(strcmp(temp.payer, username) == 0) {
-            temp.payee_balance = -1;
-        } else if(strcmp(temp.payee, username) == 0) {
-            temp.payer_balance = -1;
+        int to_include = 0;
+        if(strcmp(temp.payee, username) == 0 || strcmp(temp.payer, username) == 0) {
+            if(strcmp(temp.payer, temp.payee) == 0) {
+                to_include = 1;
+            } else if(strcmp(temp.payer, username) == 0) {
+                temp.payee_balance = -1;
+                to_include = 1;
+            } else if(strcmp(temp.payee, username) == 0) {
+                to_include = 1;
+                temp.payer_balance = -1;
+            }
         }
 
-        tx_history[tx_history_size++] = temp;
+        if(to_include == 1)
+            tx_history[tx_history_size++] = temp;
     }
 
     close(fd);
@@ -371,6 +377,7 @@ int customer_apply_for_loan(int *client_socket, char *username) {
     read(*client_socket, &loan_account, sizeof(loan_account));
 
     strcpy(loan_account.username, username);
+    strcpy(loan_account.loan_acc_num, gen_uuid());
 
     int fd = open("./data/loan.dat", O_WRONLY | O_APPEND);
     if (fd == -1) {
@@ -452,7 +459,6 @@ int customer_change_password(int *client_socket, char *username) {
 
     close(fd);
 
-    printf("res: %d\n", result);
     return result;
 }
 

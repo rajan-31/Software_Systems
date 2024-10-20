@@ -11,6 +11,8 @@
 #include "./lib/schema.h"
 #include "./lib/admin_client.h"
 #include "./lib/customer_client.h"
+#include "./lib/employee_client.h"
+#include "./lib/manager_client.h"
 
 int main() {
     goto_connect:
@@ -36,7 +38,7 @@ int main() {
     }
     printf("%s", buffer1);
 
-    int user_role = 4;
+    int user_role = 3;
     // scanf("%d", &user_role);
     write(client_fd, &user_role, sizeof(user_role));
 
@@ -48,7 +50,7 @@ int main() {
         read(client_fd, &buffer2, sizeof(buffer2));
         printf("%s", buffer2);
 
-        char username[USERNAME_LEN] = "cus1";
+        char username[USERNAME_LEN] = "emp4";
         // scanf("%s", username);
         write(client_fd, &username, sizeof(username));
         
@@ -77,9 +79,9 @@ int main() {
                 if(user_role == 1) {
                     do_goto_connect = handle_admin_menu(&client_fd, username, password);
                 } else if(user_role == 2) {
-                    // do_goto_connect = handle_admin_menu(&client_fd, username, password);
+                    do_goto_connect = handle_manager_menu(&client_fd, username, password);
                 } else if(user_role == 3) {
-                    // do_goto_connect = handle_admin_menu(&client_fd, username, password);
+                    do_goto_connect = handle_employee_menu(&client_fd, username, password);
                 } else if(user_role == 4) {
                     do_goto_connect = handle_customer_menu(&client_fd, username, password);
                 }

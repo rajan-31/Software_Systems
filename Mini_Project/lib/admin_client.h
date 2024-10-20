@@ -50,7 +50,7 @@ void admin_modify_customer_details(int *client_fd) {
     struct Customer_S customer_data;
 
     printf("Username of Customer: "); scanf("%s", customer_data.username);
-    printf("New Password: "); scanf("%s", customer_data.password);
+    // printf("New Password: "); scanf("%s", customer_data.password);
     printf("New Fullname: "); scanf(" %[^\n]", customer_data.fullname);
 
     write(*client_fd, &customer_data, sizeof(customer_data));
@@ -59,11 +59,11 @@ void admin_modify_customer_details(int *client_fd) {
     read(*client_fd, &status, sizeof(status));
 
     if(status == -1) {
-        printf("Failed to modify customer details!\n");
+        printf("Failed to Modify Customer Details!\n");
     } else if(status == 0) {
         printf("Invalid Username!\n");
     } else if(status == 1) {
-        printf("Succefully modified bank employee details\n");
+        printf("Succefully Modified Customer Details\n");
     }
 }
 

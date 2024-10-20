@@ -25,13 +25,30 @@ char *ADMIN_MENU_MSG = \
 
 // manager
 char *MANAGER_MENU_MSG = \
-    "\n\nAdmin Menu\n"
+    "\n\nManager Menu\n"
     "1. Activate or Deactivate Customer Account\n"
     "2. Assign Loan Application Process to Employee\n"
     "3. Review Customer Feedbacks\n"
     "4. Change Password\n"
     "5. Logout\n"
     "6. Exit\n"
+    "\nChoose Operation: ";
+
+// employee
+char *EMPLOYEE_MENU_MSG = \
+    "\n\nEmployee Menu\n"
+    " 1. View Customers\n"
+    " 2. View Customers Transactions\n"
+    " 3. Add New Customer\n"
+    " 4. Modify Customer Details\n"
+    "\n"
+    " 5. View Assigned Loan Applications\n"
+    " 6. Process Loan Application\n"
+    " 7. Approve or Reject Loan Application\n"
+    "\n"
+    " 8. Change Password\n"
+    " 9. Logout\n"
+    "10. Exit\n"
     "\nChoose Operation: ";
 
 // customer

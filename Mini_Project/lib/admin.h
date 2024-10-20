@@ -173,6 +173,7 @@ int admin_modify_customer_details(int *client_socket) {
         if (strcmp(temp.username, customer_data.username) == 0) {
             // useful while modifying, since customer_data don't have role
             customer_data.active = temp.active;
+            strcpy(customer_data.password, temp.password);
             strcpy(customer_data.savings_acc_num, temp.savings_acc_num);
             customer_data.savings_acc_balance = temp.savings_acc_balance;
 

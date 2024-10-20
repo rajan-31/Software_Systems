@@ -15,6 +15,8 @@
 #include "./lib/server.h"
 #include "./lib/admin.h"
 #include "./lib/customer.h"
+#include "./lib/employee.h"
+#include "./lib/manager.h"
 
 const int PORT = 8080;
 const int REQUESTS_QUEUE_SIZE = 100;
@@ -49,9 +51,9 @@ void *handle_client(void *arg) {
             if(user_role == ADMIN_E) {
                 handle_admin_login(&client_socket, username);
             } else if(user_role == MANAGER_E) {
-                // handle_manager_login(&client_socket, username);
+                handle_manager_login(&client_socket, username);
             } else if(user_role == EMPLOYEE_E) {
-                // handle_employee_login(&client_socket, username);
+                handle_employee_login(&client_socket, username);
             } else if(user_role == CUSTOMER_E) {
                 handle_customer_login(&client_socket, username);
             }

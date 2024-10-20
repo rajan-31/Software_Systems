@@ -215,12 +215,12 @@ void print_all() {
         exit(EXIT_FAILURE);
     }
     printf("\n======== Loan Application ========\n");
-    printf("%-15s %-15s %-14s %-12s %-10s %-10s %-15s %-10s %-10s %-10s %-10s\n",
+    printf("%-15s %-37s %-14s %-12s %-10s %-10s %-15s %-10s %-10s %-10s %-10s\n",
         "username", "acc", "type", "amount", "duration", "annual_inc", "employee", "credit_sc", "interest", "processed", "accepted"
     );
     struct Loan_Account_S loan_account;
     while (read(fd5, &loan_account, sizeof(struct Loan_Account_S))) {
-        printf("%-15s %-15s %-14s %-12.2f %-10d %-10d %-15s %-10d %-10d %-10d %-10d\n",
+        printf("%-15s %-37s %-14s %-12.2f %-10d %-10d %-15s %-10d %-10d %-10d %-10d\n",
             loan_account.username,
             loan_account.loan_acc_num,
             loan_account.type == HOME_LOAN_E ? "Home Loan" :

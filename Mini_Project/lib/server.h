@@ -48,10 +48,10 @@ void do_active_session_print(struct Session_S *active_sessions, int n, pthread_m
 
     int count = 0;
 
-    printf("\nPrinting active sessions: \n");
+    printf("\nActive Sessions: \n");
     for(int i=0; i<=n-1; i++) {
         if(active_sessions[i].username[0] != '\0') {
-            printf("Username: %s\tSocket_fd: %d\n", active_sessions[i].username, active_sessions[i].socket_fd);
+            printf("    * Username: %s,\tSocket_fd: %d\n", active_sessions[i].username, active_sessions[i].socket_fd);
             count++;
         }
     }

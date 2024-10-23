@@ -239,7 +239,7 @@ void customer_release_lock_by_position(int fd, int record_pos, struct flock *loc
     fcntl(fd, F_SETLKW, lock);  // Release lock
 }
 
-// -2: insufficient balance, 0: Invalid Amount; -1: failed, 1: transferred
+//-3: self transfer, -2: insufficient balance, 0: Invalid Amount; -1: failed, 1: transferred
 int customer_transfer_funds(int *client_socket, char *username) {
     char payer_u[USERNAME_LEN]; strcpy(payer_u, username);
     char payee_u[USERNAME_LEN];
@@ -250,6 +250,9 @@ int customer_transfer_funds(int *client_socket, char *username) {
 
     if(amount_to_transfer <= 0)
         return 0;
+
+    if(strcmp(payer_u, payee_u) == 0)
+        return -3;
 
     // =======================================
 
@@ -305,15 +308,8 @@ int customer_transfer_funds(int *client_socket, char *username) {
         payer_record.savings_acc_balance-=amount_to_transfer;
         payee_record.savings_acc_balance+=amount_to_transfer;
 
-        lseek(fd, payer_pos * sizeof(struct Customer_S), SEEK_SET);
-        write(fd, &payer_record, sizeof(struct Customer_S));
-
-        lseek(fd, payee_pos * sizeof(struct Customer_S), SEEK_SET);
-        write(fd, &payee_record, sizeof(struct Customer_S));
-
-        result = 1;
-
         // =======================================
+        // Journal (Write-Ahead Logging)
         
         struct Transaction_S tx;
 
@@ -329,6 +325,17 @@ int customer_transfer_funds(int *client_socket, char *username) {
         tx.payee_balance = payee_record.savings_acc_balance;
 
         customer_add_to_transaction_history(tx);
+
+        // =======================================
+        // commit
+        
+        lseek(fd, payer_pos * sizeof(struct Customer_S), SEEK_SET);
+        write(fd, &payer_record, sizeof(struct Customer_S));
+
+        lseek(fd, payee_pos * sizeof(struct Customer_S), SEEK_SET);
+        write(fd, &payee_record, sizeof(struct Customer_S));
+
+        result = 1;
     }
 
     customer_release_lock_by_position(fd, first_pos, &lock);

@@ -9,6 +9,10 @@
 
 - currently I have not used random hash and stored in database, but that's what should be done, otherwise password is vulnerable to rainbow table attack, having salt does not fully eliminate the risk but it make it more costly (time and power wise) to guess a password
 
+- Journal (Write-Ahead Logging)
+    to log transfer of funds before commiting
+    to use it in case of system failure
+
 
 ---
 
@@ -18,10 +22,10 @@ To do
 - [*] only active cus can login
 - [ ] ~~should not assign another manager to loan~~
 - [*] transaction history can see all, should see own only
-- [ ] any employee if select role manager, he si able to login, fix this
+- [*] any employee if select role manager, he shouldn't be able to login, fix this
 
 - [ ] only assigned employee should be able to proccess and accept/reject loan
-- [ ] you can transfer to yourself, handle this
+- [*] you can transfer to yourself, handle this
 - [ ] duplicate emp, cus add, handle this
 - [ ] ask again after wrong password
 - [ ] ACID

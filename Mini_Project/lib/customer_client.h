@@ -51,12 +51,13 @@ void customer_deposit_money(int *client_fd) {
     }
 }
 
-void customer_transfer_funds(int *client_fd) {
+void customer_transfer_funds(int *client_fd, char *username) {
     float amount_to_transfer = 0;
     char receiver[USERNAME_LEN];
 
     printf("Transfer Funds to: "); scanf("%s", receiver);
     write(*client_fd, &receiver, sizeof(receiver));
+
 
     printf("Enter Amount: "); scanf("%f", &amount_to_transfer);
     write(*client_fd, &amount_to_transfer, sizeof(amount_to_transfer));
@@ -64,7 +65,9 @@ void customer_transfer_funds(int *client_fd) {
     int status = -1;
     read(*client_fd, &status, sizeof(status));
 
-    if(status == -2) {
+    if(status == -3) {
+        printf("Can't Self Transfer, Invalid Operation!\n");
+    } else if(status == -2) {
         printf("Insufficient Balance!\n");
     } else if(status == -1) {
         printf("Failed to Transfer Funds!\n");
@@ -142,7 +145,9 @@ void customer_view_transaction_history(int *client_fd, char *username) {
 
 void customer_apply_for_loan(int *client_fd) {
     struct Loan_Account_S loan_account;
+    memset(&loan_account, 0, sizeof(struct Loan_Account_S));
 
+    strcpy(loan_account.username, "");
     strcpy(loan_account.loan_acc_num, "");
     strcpy(loan_account.assigned_employee, "");
     loan_account.credit_score = 0;
@@ -162,7 +167,7 @@ void customer_apply_for_loan(int *client_fd) {
     // } while(loan_account.type > 5 || loan_account.type <= 0);
 
     // do {
-        printf("\nLoan Amount: "); 
+        printf("\nLoan Amount (₹): "); 
         scanf("%f", &loan_account.loan_amount);
         
     //     if(loan_account.loan_amount <= 0) {
@@ -182,7 +187,7 @@ void customer_apply_for_loan(int *client_fd) {
     // } while(loan_account.loan_repayment_duration_months <= 0);
 
     // do {
-        printf("\nYour Annual Income: "); 
+        printf("\nYour Annual Income (₹): "); 
         scanf("%u", &loan_account.annual_income);
 
     //     if(loan_account.annual_income <= 0) {
@@ -190,7 +195,7 @@ void customer_apply_for_loan(int *client_fd) {
     //     }
     // } while(loan_account.annual_income <= 0);
 
-    
+
     write(*client_fd, &loan_account, sizeof(struct Loan_Account_S));
     int status = -1;
     read(*client_fd, &status, sizeof(status));
@@ -272,7 +277,7 @@ int handle_customer_menu(int *client_fd, char *username, char *password){
             customer_deposit_money(client_fd);
             break;
         case 4:
-            customer_transfer_funds(client_fd);
+            customer_transfer_funds(client_fd, username);
             break;
 
         case 5:

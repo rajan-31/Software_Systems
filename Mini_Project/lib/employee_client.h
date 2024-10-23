@@ -173,35 +173,61 @@ void employee_process_loan_application(int *client_fd) {
     printf("\nEnter Loan Account Number: "); scanf("%s", loan_acc_num);
     write(*client_fd, loan_acc_num, sizeof(loan_acc_num));
 
-    struct Loan_Account_S loan_account;
+    struct Loan_Account_S loan_account; memset(&loan_account, 0, sizeof(struct Loan_Account_S));
     read(*client_fd, &loan_account, sizeof(struct Loan_Account_S));
 
-    printf("%-15s %-37s %-14s %-12s %-10s %-10s %-15s %-10s %-10s %-10s %-10s\n",
-        "username", "acc", "type", "amount", "duration", "annual_inc", "employee", "credit_sc", "interest", "processed", "accepted"
-    );
-    printf("%-15s %-37s %-14s %-12.2f %-10d %-10d %-15s %-10d %-10d %-10d %-10d\n",
-        loan_account.username,
-        loan_account.loan_acc_num,
-        loan_account.type == HOME_LOAN_E ? "Home Loan" :
-        loan_account.type == PERSONAL_LOAN_E ? "Personal Loan" :
-        loan_account.type == EDUCATION_LOAN_E ? "Education Loan" :
-        loan_account.type == VEHICLE_LOAN_E ? "Vehicle Loan" :
-        loan_account.type == HOME_LOAN_E ? "Home Loan" :
-        loan_account.type == OTHER_LOAN_E ? "Other Loan" : "Unknown",
-        loan_account.loan_amount,
-        loan_account.loan_repayment_duration_months,
-        loan_account.annual_income,
-        loan_account.assigned_employee,
-        loan_account.credit_score,
-        loan_account.interest_rate,
-        loan_account.processed,
-        loan_account.accepted
-    );
+    if(loan_account.loan_acc_num[0] != '\0') {
+        /* printf("\nLoan Account Number: %s\nUsername: %s\nType: %s\nAmount (₹): %-17.2f\nDuration (Months): %d\nAnnual Income (₹): %d\nCredit Score: %d\nInterest Rate (%%): %d\nProcessed: %s\nAccepted: %s\n",
+            loan_account.loan_acc_num,
+            loan_account.username,
+            loan_account.type == HOME_LOAN_E ? "Home Loan" :
+            loan_account.type == PERSONAL_LOAN_E ? "Personal Loan" :
+            loan_account.type == EDUCATION_LOAN_E ? "Education Loan" :
+            loan_account.type == VEHICLE_LOAN_E ? "Vehicle Loan" :
+            loan_account.type == HOME_LOAN_E ? "Home Loan" :
+            loan_account.type == OTHER_LOAN_E ? "Other Loan" : "Unknown",
+            loan_account.loan_amount,
+            loan_account.loan_repayment_duration_months,
+            loan_account.annual_income,
+            loan_account.credit_score,
+            loan_account.interest_rate,
+            loan_account.processed == 1 ? "Yes" : "No",
+            loan_account.accepted == 1 ? "Yes" : "No"
+        ); */
 
-    int action = 0;
-    printf("\n\n1.Don't Process 2. Process\nAction: ");
-    scanf("%d", &action); action -= 1;
-    write(*client_fd, &action, sizeof(action));
+        printf("\n%-20s: %s\n%-20s: %s\n%-20s: %s\n%-22s: %-17.2f\n%-20s: %d\n%-22s: %d\n%-20s: %d\n%-20s: %d\n%-20s: %s\n%-20s: %s\n",
+            "Loan Account Number", loan_account.loan_acc_num,
+            "Username", loan_account.username,
+            "Type", loan_account.type == HOME_LOAN_E ? "Home Loan" :
+                    loan_account.type == PERSONAL_LOAN_E ? "Personal Loan" :
+                    loan_account.type == EDUCATION_LOAN_E ? "Education Loan" :
+                    loan_account.type == VEHICLE_LOAN_E ? "Vehicle Loan" :
+                    loan_account.type == OTHER_LOAN_E ? "Other Loan" : "Unknown",
+            "Amount (₹)", loan_account.loan_amount,
+            "Duration (Months)", loan_account.loan_repayment_duration_months,
+            "Annual Income (₹)", loan_account.annual_income,
+            "Credit Score", loan_account.credit_score,
+            "Interest Rate (%)", loan_account.interest_rate,
+            "Processed", loan_account.processed == 1 ? "Yes" : "No",
+            "Accepted", loan_account.accepted == 1 ? "Yes" : "No"
+        );
+
+        int action = 0;
+        printf("\n\n1.Don't Process 2. Process\nAction: ");
+        scanf("%d", &action); action -= 1;
+        write(*client_fd, &action, sizeof(action));
+
+        if(action == 1) {
+            int credit_score = 0;
+            printf("\nEnter Credit Score: "); scanf("%d", &credit_score);
+            write(*client_fd, &credit_score, sizeof(credit_score));
+
+            int interest_rate = 0;
+            printf("\nEnter Interest Rate (%%): "); scanf("%d", &interest_rate);
+            write(*client_fd, &interest_rate, sizeof(interest_rate));
+        }
+    }
+
 
 
     int status = -1;
@@ -221,35 +247,32 @@ void employee_accept_reject_loan_application(int *client_fd) {
     printf("\nEnter Loan Account Number: "); scanf("%s", loan_acc_num);
     write(*client_fd, loan_acc_num, sizeof(loan_acc_num));
 
-    struct Loan_Account_S loan_account;
+    struct Loan_Account_S loan_account; memset(&loan_account, 0, sizeof(struct Loan_Account_S));
     read(*client_fd, &loan_account, sizeof(struct Loan_Account_S));
 
-    printf("%-15s %-37s %-14s %-12s %-10s %-10s %-15s %-10s %-10s %-10s %-10s\n",
-        "username", "acc", "type", "amount", "duration", "annual_inc", "employee", "credit_sc", "interest", "processed", "accepted"
-    );
-    printf("%-15s %-37s %-14s %-12.2f %-10d %-10d %-15s %-10d %-10d %-10d %-10d\n",
-        loan_account.username,
-        loan_account.loan_acc_num,
-        loan_account.type == HOME_LOAN_E ? "Home Loan" :
-        loan_account.type == PERSONAL_LOAN_E ? "Personal Loan" :
-        loan_account.type == EDUCATION_LOAN_E ? "Education Loan" :
-        loan_account.type == VEHICLE_LOAN_E ? "Vehicle Loan" :
-        loan_account.type == HOME_LOAN_E ? "Home Loan" :
-        loan_account.type == OTHER_LOAN_E ? "Other Loan" : "Unknown",
-        loan_account.loan_amount,
-        loan_account.loan_repayment_duration_months,
-        loan_account.annual_income,
-        loan_account.assigned_employee,
-        loan_account.credit_score,
-        loan_account.interest_rate,
-        loan_account.processed,
-        loan_account.accepted
-    );
+    if(loan_account.loan_acc_num[0] != '\0') {
+        printf("\n%-20s: %s\n%-20s: %s\n%-20s: %s\n%-22s: %-17.2f\n%-20s: %d\n%-22s: %d\n%-20s: %d\n%-20s: %d\n%-20s: %s\n%-20s: %s\n",
+            "Loan Account Number", loan_account.loan_acc_num,
+            "Username", loan_account.username,
+            "Type", loan_account.type == HOME_LOAN_E ? "Home Loan" :
+                    loan_account.type == PERSONAL_LOAN_E ? "Personal Loan" :
+                    loan_account.type == EDUCATION_LOAN_E ? "Education Loan" :
+                    loan_account.type == VEHICLE_LOAN_E ? "Vehicle Loan" :
+                    loan_account.type == OTHER_LOAN_E ? "Other Loan" : "Unknown",
+            "Amount (₹)", loan_account.loan_amount,
+            "Duration (Months)", loan_account.loan_repayment_duration_months,
+            "Annual Income (₹)", loan_account.annual_income,
+            "Credit Score", loan_account.credit_score,
+            "Interest Rate (%)", loan_account.interest_rate,
+            "Processed", loan_account.processed == 1 ? "Yes" : "No",
+            "Accepted", loan_account.accepted == 1 ? "Yes" : "No"
+        );
 
-    int action = 0;
-    printf("\n\n1. Reject 2. Accept\nAction: ");
-    scanf("%d", &action); action -= 1;
-    write(*client_fd, &action, sizeof(action));
+        int action = 0;
+        printf("\n\n1. Reject 2. Accept\nAction: ");
+        scanf("%d", &action); action -= 1;
+        write(*client_fd, &action, sizeof(action));
+    }
 
 
     int status = -1;

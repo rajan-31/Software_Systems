@@ -211,7 +211,7 @@ int employee_process_loan_application(int *client_socket) {
     int flag = 0;   // set if we find a match
     
 
-    struct Loan_Account_S temp;
+    struct Loan_Account_S temp; memset(&temp, 0, sizeof(struct Loan_Account_S));
     while (read(fd, &temp, sizeof(struct Loan_Account_S)) > 0) {
         idx++;
         if (strcmp(temp.loan_acc_num, loan_acc_num) == 0) {
@@ -229,6 +229,14 @@ int employee_process_loan_application(int *client_socket) {
         int action = 0;
         read(*client_socket, &action, sizeof(action));
 
+        int credit_score = temp.credit_score;
+        int interest_rate = temp.interest_rate;
+        if(action == 1) {
+            read(*client_socket, &credit_score, sizeof(credit_score));
+            read(*client_socket, &interest_rate, sizeof(interest_rate));
+        }
+
+
         struct flock lock;
         lock.l_type = F_WRLCK;
         lock.l_whence = SEEK_SET;
@@ -244,12 +252,18 @@ int employee_process_loan_application(int *client_socket) {
         lseek(fd, -1 * sizeof(struct Loan_Account_S), SEEK_CUR);
 
         temp.processed = action;
+        temp.credit_score = credit_score;
+        temp.interest_rate = interest_rate;
         write(fd, &temp, sizeof(struct Loan_Account_S));
         
         result = 1;
 
         lock.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &lock);
+    } else {
+        memset(&temp, 0, sizeof(struct Loan_Account_S));
+        write(*client_socket, &temp, sizeof(struct Loan_Account_S));
+        result = 0;
     }
 
     close(fd);
@@ -274,7 +288,7 @@ int employee_accept_reject_loan_application(int *client_socket) {
     int flag = 0;   // set if we find a match
     
 
-    struct Loan_Account_S temp;
+    struct Loan_Account_S temp; memset(&temp, 0, sizeof(struct Loan_Account_S));
     while (read(fd, &temp, sizeof(struct Loan_Account_S)) > 0) {
         idx++;
         if (strcmp(temp.loan_acc_num, loan_acc_num) == 0) {
@@ -313,6 +327,10 @@ int employee_accept_reject_loan_application(int *client_socket) {
 
         lock.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &lock);
+    } else {
+        memset(&temp, 0, sizeof(struct Loan_Account_S));
+        write(*client_socket, &temp, sizeof(struct Loan_Account_S));
+        result = 0;
     }
 
     close(fd);

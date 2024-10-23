@@ -5,10 +5,14 @@
 #include <string.h>
 #include <stdlib.h> // free
 #include <unistd.h> // read, write
+#include <argon2.h> // hashing pass
+#include <termios.h>    // trun off terminal echo
 
 #define IGNORE_IMPORTS
 
 #include "./lib/schema.h"
+#include "./lib/common.h"
+#include "./lib/client.h"
 #include "./lib/admin_client.h"
 #include "./lib/customer_client.h"
 #include "./lib/employee_client.h"
@@ -26,7 +30,7 @@ int main() {
 
     // accept only from (converted string to bin for ipv4)
     int convert_status = inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
-
+    // int convert_status = inet_pton(AF_INET, "192.168.0.112", &serv_addr.sin_addr);
 
 
     int connect_status = connect(client_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
@@ -38,8 +42,8 @@ int main() {
     }
     printf("%s", buffer1);
 
-    int user_role = 3;
-    // scanf("%d", &user_role);
+    int user_role;
+    scanf("%d", &user_role);
     write(client_fd, &user_role, sizeof(user_role));
 
     if(user_role < 0 || user_role > 4) {
@@ -50,8 +54,8 @@ int main() {
         read(client_fd, &buffer2, sizeof(buffer2));
         printf("%s", buffer2);
 
-        char username[USERNAME_LEN] = "emp4";
-        // scanf("%s", username);
+        char username[USERNAME_LEN];
+        scanf("%s", username);
         write(client_fd, &username, sizeof(username));
         
         int active_session_assign = -2;
@@ -62,19 +66,30 @@ int main() {
             read(client_fd, &buffer3, sizeof(buffer3));
             printf("%s", buffer3);
 
-            char password[PASSWORD_LEN] = "123456";
+            char password[PASSWORD_LEN];
             // scanf("%s", password);
-            write(client_fd, &password, sizeof(password));
+            // =======================================
+            // ref: https://stackoverflow.com/questions/1786532/c-command-line-password-input
+
+            clear_input_buffer();
+            get_password(password);
+
+            // =======================================
+            write(client_fd, password, sizeof(password));
 
 
             int verify_user_password_status;
             read(client_fd, &verify_user_password_status, sizeof(verify_user_password_status));
 
-            // -1: invalid username, 0: wrong password, 1: verified
-            if(verify_user_password_status == -1) {
-                printf("Invalid Username!\n");
+            // -3: not manager, -2: inactive customer -1: invalid username, 0: wrong password, 1: verified
+            if(verify_user_password_status == -3) {
+                printf("\nYou are not a Manager!\n");
+            } else if(verify_user_password_status == -2) {
+                printf("\n\nInactive Username!\n");
+            } else if(verify_user_password_status == -1) {
+                printf("\nInvalid Username!\n");
             } else if(verify_user_password_status == 0) {
-                printf("Invalid Password!\n");
+                printf("\nInvalid Password!\n");
             } else if(verify_user_password_status == 1) {
                 if(user_role == 1) {
                     do_goto_connect = handle_admin_menu(&client_fd, username, password);
@@ -96,6 +111,7 @@ int main() {
 
     close(client_fd);
 
+    printf("\n\n");
     if(do_goto_connect == 1)
         goto goto_connect;
 

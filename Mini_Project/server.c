@@ -6,6 +6,7 @@
 #include <stdlib.h> //free
 #include <unistd.h> // read, write
 #include <fcntl.h>
+#include <argon2.h>
 
 #define IGNORE_IMPORTS
 

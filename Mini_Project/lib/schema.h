@@ -1,5 +1,5 @@
 #define USERNAME_LEN 100
-#define PASSWORD_LEN 100
+#define PASSWORD_LEN 100    // actuallu argon2 encoded hash length
 #define FULLNAME_LEN 100
 
 #define ACCOUNT_NUM_LEN 100

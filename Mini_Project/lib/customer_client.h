@@ -75,7 +75,7 @@ void customer_transfer_funds(int *client_fd) {
     }
 }
 
-void customer_view_transaction_history(int *client_fd) {
+void customer_view_transaction_history(int *client_fd, char *username) {
     int tx_history_size = 0;
     read(*client_fd, &tx_history_size, sizeof(tx_history_size));
 
@@ -88,7 +88,7 @@ void customer_view_transaction_history(int *client_fd) {
     read(*client_fd, tx_history, tx_history_size * sizeof(struct Transaction_S));
 
 
-    printf("\n%-37s %-10s %-8s %-20s %-17s %-17s %-17s\n",
+    printf("\n%-37s %-10s %-8s %-40s %-19s %-19s %-19s\n",
         "Transaction ID", "Date", "Time", "Remarks", "Debit (₹)", "Credit (₹)", "Balance (₹)"
     );
 
@@ -97,24 +97,44 @@ void customer_view_transaction_history(int *client_fd) {
         char time_buffer[20];
         struct tm *time_info = localtime(&tx_history[i].timestamp);
         strftime(time_buffer, sizeof(time_buffer), "%Y-%m-%d %H:%M:%S", time_info);
-    
-        if(tx_history[i].t_type == CREDIT_E) {
-            printf("%-37s %-19s %-20s %-17s %-17.2f %-17.2f\n",
+ 
+
+        float debited = -1, credited = -1;
+        char reamarks[40];
+        if(strcmp(tx_history[i].payer, tx_history[i].payee) == 0) {
+            if(tx_history[i].t_type == DEBIT_E) {
+                debited = tx_history[i].amount;
+                strcpy(reamarks, "Withdrawn by You");
+            } else {
+                credited = tx_history[i].amount;
+                strcpy(reamarks, "Deposited by You");
+            }
+        } else if(strcmp(tx_history[i].payer, username) == 0) {
+            debited = tx_history[i].amount;
+            snprintf(reamarks, 40, "Transferred to %s", tx_history[i].payee);
+        } else {
+            credited = tx_history[i].amount;
+            snprintf(reamarks, 40, "Transferred by %s", tx_history[i].payer);
+        }
+
+
+        if(debited == -1) {
+            printf("%-37s %-19s %-40s %-17s %-17.2f %-17.2f\n",
                 tx_history[i].transaction_id,
                 time_buffer,
-                (strcmp(tx_history[i].payer, tx_history[i].payee) == 0) ? "" : tx_history[i].payee,
-                "",
-                tx_history[i].amount,
-                tx_history[i].payer_balance
+                reamarks,
+                " ",
+                credited,
+                tx_history[i].payer_balance == -1 ? tx_history[i].payee_balance : tx_history[i].payer_balance
             );
         } else {
-            printf("%-37s %-19s %-20s %-17.2f %17s %-17.2f\n",
+            printf("%-37s %-19s %-40s %-17.2f %-17s %-17.2f\n",
                 tx_history[i].transaction_id,
                 time_buffer,
-                (strcmp(tx_history[i].payer, tx_history[i].payee) == 0) ? "" : tx_history[i].payee,
-                tx_history[i].amount,
-                "",
-                tx_history[i].payer_balance
+                reamarks,
+                debited,
+                " ",
+                tx_history[i].payer_balance == -1 ? tx_history[i].payee_balance : tx_history[i].payer_balance
             );
         }
     }
@@ -265,7 +285,7 @@ int handle_customer_menu(int *client_fd, char *username, char *password){
             customer_add_feedback(client_fd);
             break;
         case 8:
-            customer_view_transaction_history(client_fd);
+            customer_view_transaction_history(client_fd, username);
             break;
         case 9:
             // Logout

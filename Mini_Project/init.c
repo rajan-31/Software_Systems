@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <argon2.h>
 
 #include "./lib/schema.h"
 #include "./lib/common.h"
@@ -14,11 +15,25 @@ void clear_data_and_init_admin() {
         perror("Error opening file");
         exit(EXIT_FAILURE);
     }
-    struct Admin_S admin_data;
+    struct Admin_S admin_data; 
+    memset(&admin_data, 0, sizeof(struct Admin_S));
+
     int num_records1=3;
     for(int i=1; i<=num_records1; i++) {
         sprintf(admin_data.username, "admin%d", i);
-        strcpy(admin_data.password, "123456");
+
+        char password[PASSWORD_LEN] = "123456";
+        char salt[SALT_LEN] = "random_salt_here"; 
+        // it will be encoded with more details regarding argon2 arguments also
+        char *password_hashed = hash_password(password, salt);
+
+        if (password_hashed) {
+            strcpy(admin_data.password, password_hashed);
+            free(password_hashed);
+        } else {
+            printf("Failed to hash password.\n");
+        }
+
         sprintf(admin_data.fullname, "Admin %d", i);
 
         write(fd1, &admin_data, sizeof(struct Admin_S));
@@ -35,12 +50,20 @@ void clear_data_and_init_employee() {
         exit(EXIT_FAILURE);
     }
     struct Employee_S employee_data;
-    int num_records2=3;
+    memset(&employee_data, 0, sizeof(struct Employee_S));
+
+    int num_records2=4;
     for(int i=1; i<=num_records2; i++) {
         sprintf(employee_data.username, "emp%d", i);
-        strcpy(employee_data.password, "123456");
+
+        char password[PASSWORD_LEN] = "123456";
+        char salt[SALT_LEN] = "random_salt_here"; 
+        char *password_hashed = hash_password(password, salt);
+
+        strcpy(employee_data.password, password_hashed);
+        
         sprintf(employee_data.fullname, "Emp %d", i);
-        employee_data.role = EMPLOYEE_E;
+        employee_data.role = i>num_records2/2? EMPLOYEE_E:MANAGER_E;
 
         write(fd2, &employee_data, sizeof(struct Employee_S));
     }
@@ -54,13 +77,23 @@ void clear_data_and_init_customer() {
         perror("Error opening file");
         exit(EXIT_FAILURE);
     }
+
     struct Customer_S customer_data;
+    memset(&customer_data, 0, sizeof(struct Customer_S));
+
+
     int num_records3=3;
     for(int i=1; i<=num_records3; i++) {
         sprintf(customer_data.username, "cus%d", i);
-        strcpy(customer_data.password, "123456");
+        
+        char password[PASSWORD_LEN] = "123456";
+        char salt[SALT_LEN] = "random_salt_here"; 
+        char *password_hashed = hash_password(password, salt);
+
+        strcpy(customer_data.password, password_hashed);
+
         sprintf(customer_data.fullname, "Cus %d", i);
-        customer_data.active = 0;
+        customer_data.active = 1;
         strcpy(customer_data.savings_acc_num, "");
         customer_data.savings_acc_balance = 0;
 
@@ -74,6 +107,7 @@ void clear_data_and_init_transaction_history() {
     char filepath[] = "./data/transaction.dat";
     int num_records=3;
     struct Transaction_S data;
+    memset(&data, 0, sizeof(struct Transaction_S));
 
  
     int fd = open(filepath, O_RDWR | O_CREAT | O_TRUNC, 0644);
@@ -144,10 +178,10 @@ void print_all() {
     }
 
     printf("======== Admins ========\n");
-    printf("\nuname\tpass\tfname\n");
+    printf("\nuname\tfname\t\tpass\n");
     struct Admin_S admin_data;
     while(read(fd1, &admin_data, sizeof(struct Admin_S))) {
-        printf("%s\t%s\t'%s'\n", admin_data.username, admin_data.password, admin_data.fullname);
+        printf("%s\t'%s'\t%s\n", admin_data.username, admin_data.fullname, admin_data.password);
     }
 
 
@@ -158,10 +192,10 @@ void print_all() {
     }
 
     printf("\n======== Employees ========\n");
-    printf("\nuname\tpass\tfname\trole\n");
+    printf("\nuname\tfname\trole\tpass\n");
     struct Employee_S employee_data;
     while(read(fd2, &employee_data, sizeof(struct Employee_S))) {
-        printf("%s\t%s\t%s\t%d\n", employee_data.username, employee_data.password, employee_data.fullname, employee_data.role);
+        printf("%s\t'%s'\t%d\t%s\n", employee_data.username, employee_data.fullname, employee_data.role, employee_data.password);
     }
 
 
@@ -172,10 +206,10 @@ void print_all() {
     }
 
     printf("\n======== Customers ========\n");
-    printf("\nuname\tpass\tfname\tactive\ts_acc_num\ts_acc_bal\n");
+    printf("\nuname\tfname\tactive\ts_acc_num\ts_acc_bal\tpass\n");
     struct Customer_S customer_data;
     while(read(fd3, &customer_data, sizeof(struct Customer_S))) {
-        printf("%s\t%s\t%s\t%d\t'%s'\t\t%f\n", customer_data.username, customer_data.password, customer_data.fullname, customer_data.active, customer_data.savings_acc_num, customer_data.savings_acc_balance);
+        printf("%s\t'%s'\t%d\t'%s'\t\t%f\t%s\n", customer_data.username, customer_data.fullname, customer_data.active, customer_data.savings_acc_num, customer_data.savings_acc_balance, customer_data.password);
     }
 
 

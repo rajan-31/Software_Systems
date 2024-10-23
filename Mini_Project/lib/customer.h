@@ -5,6 +5,51 @@
 #include <unistd.h>
 #endif
 
+// -2: inactive -1: invalid username, 0: wrong password, 1: verified
+int customer_verify_password(char *username, char *password, struct Customer_S *customer_data) {
+    int fd = open("./data/customer.dat", O_RDONLY);
+    if (fd == -1) {
+        perror("Error opening customer.dat file");
+        return -1;
+    }
+    
+    int result = -1;
+
+    struct flock lock;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
+
+    fcntl(fd, F_SETLKW, &lock);
+
+    struct Customer_S temp; memset(&temp, 0, sizeof(struct Customer_S));
+    while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
+        if (strcmp(temp.username, username) == 0) {
+            if(temp.active == 1) {
+                if (strcmp(temp.password, password) == 0) {
+                    strcpy(customer_data->username, temp.username);
+                    strcpy(customer_data->password, temp.password);
+                    strcpy(customer_data->fullname, temp.fullname);
+
+                    result = 1;
+                }
+                else {
+                    result = 0;
+                }
+            } 
+            else {
+                result = -2;
+            }
+        }
+    }
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &lock);
+
+    close(fd);
+    return result;
+}
+
+
 // -1: failed
 float customer_view_balance(int *client_socket, char *username) {
     int fd = open("./data/customer.dat", O_RDONLY);
@@ -21,48 +66,10 @@ float customer_view_balance(int *client_socket, char *username) {
 
     fcntl(fd, F_SETLKW, &lock);
 
-    struct Customer_S temp;    
+    struct Customer_S temp; memset(&temp, 0, sizeof(struct Customer_S));
     while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
         if (strcmp(temp.username, username) == 0) {
             result = temp.savings_acc_balance;
-        }
-    }
-
-    lock.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &lock);
-
-    close(fd);
-    return result;
-}
-
-// -1: invalid username, 0: wrong password, 1: verified
-int customer_verify_password(char *username, char *password, struct Customer_S *customer_data) {
-    int fd = open("./data/customer.dat", O_RDONLY);
-    if (fd == -1) {
-        perror("Error opening customer.dat file");
-        return -1;
-    }
-    
-    int result = -1;
-
-    struct flock lock;
-    lock.l_type = F_RDLCK;
-    lock.l_whence = SEEK_SET;
-
-    fcntl(fd, F_SETLKW, &lock);
-
-    struct Customer_S temp;    
-    while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
-        if (strcmp(temp.username, username) == 0) {
-            if (strcmp(temp.password, password) == 0) {
-                strcpy(customer_data->username, temp.username);
-                strcpy(customer_data->password, temp.password);
-                strcpy(customer_data->fullname, temp.fullname);
-
-                result = 1;
-            }
-            else
-                result = 0;
         }
     }
 
@@ -108,7 +115,7 @@ int customer_change_balance(char *username, float amount) {
     int flag = 0;   // set if we find a match
     
 
-    struct Customer_S temp;
+    struct Customer_S temp; memset(&temp, 0, sizeof(struct Customer_S));
     while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
         idx++;
         if (strcmp(temp.username, username) == 0) {
@@ -202,7 +209,7 @@ int customer_deposit_money(int *client_socket, char *username) {
 // -1: failed
 int customer_lock_account_by_username(int fd, char *username, struct flock *lock) {
     int record_pos = -1;
-    struct Customer_S record;
+    struct Customer_S record; memset(&record, 0, sizeof(struct Customer_S));
 
     lseek(fd, 0, SEEK_SET);
     while (read(fd, &record, sizeof(struct Customer_S)) > 0) {
@@ -283,6 +290,7 @@ int customer_transfer_funds(int *client_socket, char *username) {
 
 
     struct Customer_S payer_record, payee_record;
+    memset(&payer_record, 0, sizeof(struct Customer_S)); memset(&payee_record, 0, sizeof(struct Customer_S));
 
     lseek(fd, payer_pos * sizeof(struct Customer_S), SEEK_SET);
     read(fd, &payer_record, sizeof(struct Customer_S));
@@ -413,6 +421,10 @@ int customer_change_password(int *client_socket, char *username) {
     char new_password[PASSWORD_LEN];
     read(*client_socket, &new_password, sizeof(new_password));
 
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(new_password, salt);
+    strcpy(new_password, password_hashed);
+
     int fd = open("./data/customer.dat", O_RDWR);
     if (fd == -1) {
         perror("Error opening customer.dat file");
@@ -423,7 +435,7 @@ int customer_change_password(int *client_socket, char *username) {
     int idx = -1;
     int flag = 0;
 
-    struct Customer_S temp;
+    struct Customer_S temp; memset(&temp, 0, sizeof(struct Customer_S));
     while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
         idx++;
         if (strcmp(temp.username, username) == 0) {
@@ -553,8 +565,11 @@ void handle_customer_login(int *client_socket, char *username) {
     char password[PASSWORD_LEN];
     read(*client_socket, &password, sizeof(password));
 
-    struct Customer_S customer_data;
-    int customer_verify_password_status = customer_verify_password(username, password, &customer_data);
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(password, salt);
+
+    struct Customer_S customer_data; memset(&customer_data, 0, sizeof(struct Customer_S));
+    int customer_verify_password_status = customer_verify_password(username, password_hashed, &customer_data);
     write(*client_socket, &customer_verify_password_status, sizeof(customer_verify_password_status));
 
     if(customer_verify_password_status == 1) {

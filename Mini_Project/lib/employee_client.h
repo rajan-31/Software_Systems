@@ -35,7 +35,7 @@ void employee_change_password(int *client_fd) {
 }
 
 void employee_add_new_customer(int *client_fd) {
-    struct Customer_S customer_data;
+    struct Customer_S customer_data; memset(&customer_data, 0, sizeof(struct Customer_S));
 
     printf("New Customer Username: "); scanf("%s", customer_data.username);
     printf("New Customer Password: "); scanf("%s", customer_data.password);

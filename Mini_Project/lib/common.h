@@ -1,3 +1,11 @@
+#ifndef IGNORE_IMPORTS
+#include <argon2.h>
+#endif
+
+
+#define SALT_LEN 16
+#define HASH_LEN 32  // bytes
+
 
 // Function obtained from internet (https://stackoverflow.com/a/71826534/13460667)
 // Purpose: Generates a universally unique identifier (UUID)
@@ -7,7 +15,7 @@ char* gen_uuid() {
     //8 dash 4 dash 4 dash 4 dash 12
     static char buf[37] = {0};
 
-    //gen random for all spaces because lazy
+    //gen random for all places
     for(int i = 0; i < 36; ++i) {
         buf[i] = v[rand()%16];
     }
@@ -24,57 +32,64 @@ char* gen_uuid() {
     return buf;
 }
 
+// =======================================
 
-/* 
-struct Employee_S *list_all_employees(int *num_employees) {
-    struct Employee_S *all_employees = NULL;
-    int count = 0;
+void gen_salt(char *salt) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    int i;
 
-    int fd = open("./data/employee.dat", O_RDONLY);
-    if (fd == -1) {
-        perror("Error opening employee.dat file");
-        return NULL;
-    }
-    
+    srand(time(NULL));
 
-    struct flock lock;
-    lock.l_type = F_RDLCK;
-    lock.l_whence = SEEK_SET;
-
-    fcntl(fd, F_SETLKW, &lock);
-
-    struct Employee_S temp;    
-    while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
-        struct Employee_S *new_all_employees = realloc(all_employees, sizeof(struct Employee_S) * (count + 1));
-        if (new_all_employees == NULL) {
-            perror("Error reallocating memory");
-            free(all_employees);  // Free the existing memory if realloc fails
-            close(fd);
-            return NULL;
-        }
-
-        all_employees = new_all_employees;
-        // Copy the new employee data to the array
-        all_employees[count] = temp;
-        count++;
+    for (i = 0; i < SALT_LEN; i++) {
+        salt[i] = charset[rand() % (sizeof(charset) - 1)];
     }
 
-    // Unlock the file
-    lock.l_type = F_UNLCK;
-    if (fcntl(fd, F_SETLKW, &lock) == -1) {
-        perror("Error unlocking file");
-    }
-
-    // Close the file
-    close(fd);
-
-    // Set the number of employees
-    *num_employees = count;
-
-    // Return the dynamically allocated array of employees
-    return all_employees;
+    salt[SALT_LEN] = '\0';
 }
-*/
+
+
+// hash the password using Argon2
+char* hash_password(const char *password, const char *salt) {
+    unsigned int t_cost = 2;            // Number of iterations
+    unsigned int m_cost = (1 << 16);    // Memory cost (64 MiB)
+    unsigned int parallelism = 1;       // Number of threads
+    size_t hash_len = HASH_LEN;      // Length of the output hash in bytes
+
+    // Calculate the length required for the output buffer
+    size_t output_size = argon2_encodedlen(t_cost, m_cost, parallelism, SALT_LEN, HASH_LEN, Argon2_id);
+    
+    // Allocate memory for the output buffer
+    char *output_hash = malloc(output_size);
+    if (!output_hash) {
+        printf("Memory allocation failed!\n");
+        return NULL; // Return NULL if memory allocation fails
+    }
+
+    // Hash the password using Argon2id and encode the result
+    int result = argon2id_hash_encoded(
+        t_cost, m_cost, parallelism, 
+        password, strlen(password), 
+        salt, SALT_LEN, hash_len, output_hash, output_size
+    );
+
+    if (result != ARGON2_OK) {
+        printf("Error hashing password: %s\n", argon2_error_message(result));
+        free(output_hash); // Free memory in case of error
+        return NULL; // Return NULL if hashing fails
+    }
+
+    return output_hash; // Return the pointer to the output hash
+}
+
+void clear_input_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        // Do nothing, just consume characters
+    }
+}
+
+
+// =======================================
 
 /* 
 int count_num = 0;
@@ -84,6 +99,7 @@ for(int i=0; i<=count_num-1; i++) {
     printf("%s\n", all_employees[i].username);
 }
  */
+/*
 void *list_all_records(enum role_type role, int *num_records) {
     void *all_records = NULL;
     int count = 0;
@@ -173,4 +189,4 @@ void *list_all_records(enum role_type role, int *num_records) {
     // Return the dynamically allocated array of records
     return all_records;
 }
-
+*/

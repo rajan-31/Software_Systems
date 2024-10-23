@@ -5,68 +5,6 @@
 #include <unistd.h>
 #endif
 
-// -1: failed, 0: new pass mismatch, 1: success
-int employee_change_password(int *client_socket, char *username) {
-    int is_password_confirmed = -1;
-    read(*client_socket, &is_password_confirmed, sizeof(is_password_confirmed));
-
-    if(is_password_confirmed != 1)
-        return 0;
-
-    
-    // =======================================
-    char new_password[PASSWORD_LEN];
-    read(*client_socket, &new_password, sizeof(new_password));
-
-    int fd = open("./data/employee.dat", O_RDWR);
-    if (fd == -1) {
-        perror("Error opening employee.dat file");
-        return -1;
-    }
-
-    int result = -1;
-    int idx = -1;
-    int flag = 0;
-
-    struct Employee_S temp;
-    while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
-        idx++;
-        if (strcmp(temp.username, username) == 0) {
-            flag = 1;   // match found
-            break;
-        }
-    }
-
-    // =======================================
-    // lock => modify
-    if(flag == 1) {
-        struct flock lock;
-        lock.l_type = F_WRLCK;
-        lock.l_whence = SEEK_SET;
-        lock.l_start = idx * sizeof(struct Employee_S);
-        lock.l_len = sizeof(struct Employee_S);
-
-        fcntl(fd, F_SETLKW, &lock);
-
-
-        lseek(fd, idx * sizeof(struct Employee_S), SEEK_SET);
-        read(fd, &temp, sizeof(struct Employee_S));
-
-        lseek(fd, -1 * sizeof(struct Employee_S), SEEK_CUR);
-
-        strcpy(temp.password, new_password);
-        write(fd, &temp, sizeof(struct Employee_S));
-
-        lock.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &lock);
-        result = 1;
-    }
-
-    close(fd);
-
-    return result;
-}
-
 // -1: invalid username, 0: wrong password, 1: verified
 int employee_verify_password(char *username, char *password, struct Employee_S *employee_data) {
     int fd = open("./data/employee.dat", O_RDONLY);
@@ -83,7 +21,7 @@ int employee_verify_password(char *username, char *password, struct Employee_S *
 
     fcntl(fd, F_SETLKW, &lock);
 
-    struct Employee_S temp;    
+    struct Employee_S temp; memset(&temp, 0, sizeof(struct Employee_S));
     while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
         if (strcmp(temp.username, username) == 0) {
             if (strcmp(temp.password, password) == 0) {
@@ -108,11 +46,17 @@ int employee_verify_password(char *username, char *password, struct Employee_S *
 
 // -1: failed, 0: duplicate username, 1: added
 int employee_add_new_customer(int *client_socket) {
-    struct Customer_S customer_data;
+    struct Customer_S customer_data; memset(&customer_data, 0, sizeof(struct Customer_S));
     read(*client_socket, &customer_data, sizeof(customer_data));
     customer_data.active = 1;
     customer_data.savings_acc_balance = 0;
     strcpy(customer_data.savings_acc_num, "");
+
+
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(customer_data.password, salt);
+    strcpy(customer_data.password, password_hashed);
+
     
     int fd = open("./data/customer.dat", O_WRONLY);
     if (fd == -1) {
@@ -197,7 +141,7 @@ void employee_view_customers(int *client_socket) {
 
     int fd = open("./data/customer.dat", O_RDONLY);
 
-    struct Customer_S temp;
+    struct Customer_S temp;  memset(&temp, 0, sizeof(struct Customer_S));
     int customers_list_size = 0;
     while(read(fd, &temp, sizeof(struct Customer_S)) > 0) {
         if(customers_list_size >= customers_list_capacity) {
@@ -375,6 +319,73 @@ int employee_accept_reject_loan_application(int *client_socket) {
     return result;
 }
 
+// -1: failed, 0: new pass mismatch, 1: success
+int employee_change_password(int *client_socket, char *username) {
+    int is_password_confirmed = -1;
+    read(*client_socket, &is_password_confirmed, sizeof(is_password_confirmed));
+
+    if(is_password_confirmed != 1)
+        return 0;
+
+    
+    // =======================================
+    char new_password[PASSWORD_LEN];
+    read(*client_socket, &new_password, sizeof(new_password));
+
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(new_password, salt);
+    strcpy(new_password, password_hashed);
+
+    int fd = open("./data/employee.dat", O_RDWR);
+    if (fd == -1) {
+        perror("Error opening employee.dat file");
+        return -1;
+    }
+
+    int result = -1;
+    int idx = -1;
+    int flag = 0;
+
+    struct Employee_S temp; memset(&temp, 0, sizeof(struct Employee_S));
+    while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
+        idx++;
+        if (strcmp(temp.username, username) == 0) {
+            flag = 1;   // match found
+            break;
+        }
+    }
+
+    // =======================================
+    // lock => modify
+    if(flag == 1) {
+        struct flock lock;
+        lock.l_type = F_WRLCK;
+        lock.l_whence = SEEK_SET;
+        lock.l_start = idx * sizeof(struct Employee_S);
+        lock.l_len = sizeof(struct Employee_S);
+
+        fcntl(fd, F_SETLKW, &lock);
+
+
+        lseek(fd, idx * sizeof(struct Employee_S), SEEK_SET);
+        read(fd, &temp, sizeof(struct Employee_S));
+
+        lseek(fd, -1 * sizeof(struct Employee_S), SEEK_CUR);
+
+        strcpy(temp.password, new_password);
+        write(fd, &temp, sizeof(struct Employee_S));
+
+        lock.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &lock);
+        result = 1;
+    }
+
+    close(fd);
+
+    return result;
+}
+
+
 // =======================================
 
 void handle_employee_menu(int *client_socket, struct Employee_S *employee_data) {
@@ -436,8 +447,11 @@ void handle_employee_login(int *client_socket, char *username) {
     char password[PASSWORD_LEN];
     read(*client_socket, &password, sizeof(password));
 
-    struct Employee_S employee_data;
-    int employee_verify_password_status = employee_verify_password(username, password, &employee_data);
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(password, salt);
+
+    struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
+    int employee_verify_password_status = employee_verify_password(username, password_hashed, &employee_data);
     write(*client_socket, &employee_verify_password_status, sizeof(employee_verify_password_status));
 
     if(employee_verify_password_status == 1) {

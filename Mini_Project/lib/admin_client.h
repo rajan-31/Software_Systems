@@ -5,11 +5,14 @@
 #endif
 
 void admin_add_new_bank_employee(int *client_fd) {
-    struct Employee_S employee_data;
-
-    printf("New Employee Username: "); scanf("%s", employee_data.username);
-    printf("New Employee Password: "); scanf("%s", employee_data.password);
-    printf("New Employee Fullname: "); scanf(" %[^\n]", employee_data.fullname);
+    struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
+    
+    printf("New Employee Username: "); 
+    scanf("%s", employee_data.username);
+    printf("New Employee Password: "); 
+    scanf("%s", employee_data.password);
+    printf("New Employee Fullname: "); 
+    scanf(" %[^\n]", employee_data.fullname);
 
     write(*client_fd, &employee_data, sizeof(struct Employee_S));
 
@@ -26,11 +29,14 @@ void admin_add_new_bank_employee(int *client_fd) {
 }
 
 void admin_modify_employee_details(int *client_fd) {
-    struct Employee_S employee_data;
+    struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
 
-    printf("Username of Bank Employee: "); scanf("%s", employee_data.username);
-    printf("New Password: "); scanf("%s", employee_data.password);
-    printf("New Fullname: "); scanf(" %[^\n]", employee_data.fullname);
+    printf("Username of Bank Employee: "); 
+    scanf("%s", employee_data.username);
+    // printf("New Password: "); 
+    // scanf("%s", employee_data.password);
+    printf("New Fullname: "); 
+    scanf(" %[^\n]", employee_data.fullname);
 
     write(*client_fd, &employee_data, sizeof(employee_data));
 
@@ -47,11 +53,14 @@ void admin_modify_employee_details(int *client_fd) {
 }
 
 void admin_modify_customer_details(int *client_fd) {
-    struct Customer_S customer_data;
+    struct Customer_S customer_data; memset(&customer_data, 0, sizeof(struct Customer_S));
 
-    printf("Username of Customer: "); scanf("%s", customer_data.username);
-    // printf("New Password: "); scanf("%s", customer_data.password);
-    printf("New Fullname: "); scanf(" %[^\n]", customer_data.fullname);
+    printf("Username of Customer: "); 
+    scanf("%s", customer_data.username);
+    // printf("New Password: "); 
+    // scanf("%s", customer_data.password);
+    printf("New Fullname: "); 
+    scanf(" %[^\n]", customer_data.fullname);
 
     write(*client_fd, &customer_data, sizeof(customer_data));
 
@@ -68,12 +77,14 @@ void admin_modify_customer_details(int *client_fd) {
 }
 
 void admin_manage_user_roles(int *client_fd) {
-    struct Employee_S employee_data;
+    struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
 
-    printf("Username of Bank Employee: "); scanf("%s", employee_data.username);
+    printf("Username of Bank Employee: "); 
+    scanf("%s", employee_data.username);
     
     int operation = -1;
-    printf("Action: 1.Promote\t2.Demote\t3.Skip\n"); scanf("%d", &operation);
+    printf("Action: 1.Promote\t2.Demote\t3.Skip\n"); 
+    scanf("%d", &operation);
 
     if(operation == 1) {
         employee_data.role = MANAGER_E;
@@ -100,15 +111,17 @@ void admin_manage_user_roles(int *client_fd) {
 void admin_change_password(int *client_fd, char *username) {
     char password_1[PASSWORD_LEN];
     char password_2[PASSWORD_LEN];
-    printf("Enter New Password: "); scanf("%s", password_1);
-    printf("Confirm New Password: "); scanf("%s", password_2);
+    printf("Enter New Password: "); 
+    scanf("%s", password_1);
+    printf("Confirm New Password: "); 
+    scanf("%s", password_2);
 
     int is_password_confirmed = -1;
     if(strcmp(password_1, password_2) == 0) {
         is_password_confirmed = 1;
         write(*client_fd, &is_password_confirmed, sizeof(is_password_confirmed));
 
-        struct Admin_S admin_data;
+        struct Admin_S admin_data; memset(&admin_data, 0, sizeof(struct Admin_S));
         strcpy(admin_data.username, username);
         strcpy(admin_data.password, password_1);
 

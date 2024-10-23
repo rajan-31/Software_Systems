@@ -20,7 +20,7 @@ int admin_verify_password(char *username, char *password, struct Admin_S *admin_
 
     fcntl(fd, F_SETLKW, &lock);
 
-    struct Admin_S temp;    
+    struct Admin_S temp;  memset(&temp, 0, sizeof(struct Admin_S));   
     while (read(fd, &temp, sizeof(struct Admin_S)) > 0) {
         if (strcmp(temp.username, username) == 0) {
             if (strcmp(temp.password, password) == 0) {
@@ -44,9 +44,13 @@ int admin_verify_password(char *username, char *password, struct Admin_S *admin_
 
 // -1: failed, 0: duplicate username, 1: added
 int admin_add_new_bank_employee(int *client_socket) {
-    struct Employee_S employee_data;
+    struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
     read(*client_socket, &employee_data, sizeof(employee_data));
     employee_data.role = EMPLOYEE_E;
+
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(employee_data.password, salt);
+    strcpy(employee_data.password, password_hashed);
     
     int fd = open("./data/employee.dat", O_WRONLY);
     if (fd == -1) {
@@ -82,7 +86,7 @@ int admin_add_new_bank_employee(int *client_socket) {
 // -1: failed, 0: invalid username, 1: modified
 int admin_modify_employee_details(int *client_socket) {
     // client inputs
-    struct Employee_S employee_data;
+    struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
     read(*client_socket, &employee_data, sizeof(employee_data));
 
     int fd = open("./data/employee.dat", O_RDWR);
@@ -103,12 +107,13 @@ int admin_modify_employee_details(int *client_socket) {
 
     fcntl(fd, F_SETLKW, &lock);
 
-    struct Employee_S temp;
+    struct Employee_S temp; memset(&temp, 0, sizeof(struct Employee_S));
     while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
         idx++;
         if (strcmp(temp.username, employee_data.username) == 0) {
             // useful while modifying, since employee_data don't have role
             employee_data.role = temp.role;
+            strcpy(employee_data.password, temp.password);
 
             flag = 1;   // match found
             break;
@@ -146,7 +151,7 @@ int admin_modify_employee_details(int *client_socket) {
 // -1: failed, 0: invalid username, 1: modified
 int admin_modify_customer_details(int *client_socket) {
     // client inputs
-    struct Customer_S customer_data;
+    struct Customer_S customer_data; memset(&customer_data, 0, sizeof(struct Customer_S));
     read(*client_socket, &customer_data, sizeof(struct Customer_S));
 
     int fd = open("./data/customer.dat", O_RDWR);
@@ -167,7 +172,7 @@ int admin_modify_customer_details(int *client_socket) {
 
     fcntl(fd, F_SETLKW, &lock);
 
-    struct Customer_S temp;
+    struct Customer_S temp; memset(&temp, 0, sizeof(struct Customer_S));
     while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
         idx++;
         if (strcmp(temp.username, customer_data.username) == 0) {
@@ -213,7 +218,7 @@ int admin_modify_customer_details(int *client_socket) {
 // -1: failed, 0: invalid username, 1: modified
 int admin_manage_user_roles(int *client_socket) {
     // client inputs
-    struct Employee_S employee_data;
+    struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
     read(*client_socket, &employee_data, sizeof(employee_data));
 
     int fd = open("./data/employee.dat", O_RDWR);
@@ -234,7 +239,7 @@ int admin_manage_user_roles(int *client_socket) {
 
     fcntl(fd, F_SETLKW, &lock);
 
-    struct Employee_S temp;
+    struct Employee_S temp; memset(&temp, 0, sizeof(struct Employee_S));
     while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
         idx++;
         if (strcmp(temp.username, employee_data.username) == 0) {
@@ -285,8 +290,13 @@ int admin_change_password(int *client_socket) {
 
     
     // =======================================
-    struct Admin_S admin_data;
+    struct Admin_S admin_data; memset(&admin_data, 0, sizeof(struct Admin_S));
     read(*client_socket, &admin_data, sizeof(admin_data));
+
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(admin_data.password, salt);
+    strcpy(admin_data.password, password_hashed);
+
 
     int fd = open("./data/admin.dat", O_RDWR);
     if (fd == -1) {
@@ -306,7 +316,7 @@ int admin_change_password(int *client_socket) {
 
     fcntl(fd, F_SETLKW, &lock);
 
-    struct Admin_S temp;
+    struct Admin_S temp; memset(&temp, 0, sizeof(struct Admin_S));
     while (read(fd, &temp, sizeof(struct Admin_S)) > 0) {
         idx++;
         if (strcmp(temp.username, admin_data.username) == 0) {
@@ -391,8 +401,11 @@ void handle_admin_login(int *client_socket, char *username) {
     char password[PASSWORD_LEN];
     read(*client_socket, &password, sizeof(password));
 
-    struct Admin_S admin_data;
-    int admin_verify_password_status = admin_verify_password(username, password, &admin_data);
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(password, salt);
+
+    struct Admin_S admin_data; memset(&admin_data, 0, sizeof(struct Admin_S));
+    int admin_verify_password_status = admin_verify_password(username, password_hashed, &admin_data);
     write(*client_socket, &admin_verify_password_status, sizeof(admin_verify_password_status));
 
     if(admin_verify_password_status == 1) {

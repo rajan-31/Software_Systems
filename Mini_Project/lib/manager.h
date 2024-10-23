@@ -7,6 +7,50 @@
 #include "./employee.h"
 #endif
 
+//-3: not manager, -1: invalid username, 0: wrong password, 1: verified
+int manager_verify_password(char *username, char *password, struct Employee_S *employee_data) {
+    int fd = open("./data/employee.dat", O_RDONLY);
+    if (fd == -1) {
+        perror("Error opening employee.dat file");
+        return -1;
+    }
+    
+    int result = -1;
+
+    struct flock lock;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
+
+    fcntl(fd, F_SETLKW, &lock);
+
+    struct Employee_S temp; memset(&temp, 0, sizeof(struct Employee_S));
+    while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
+        if (strcmp(temp.username, username) == 0) {
+            if(temp.role == 2) {
+                if (strcmp(temp.password, password) == 0) {
+                    strcpy(employee_data->username, temp.username);
+                    strcpy(employee_data->password, temp.password);
+                    strcpy(employee_data->fullname, temp.fullname);
+                    employee_data->role = temp.role;
+
+                    result = 1;
+                }
+                else
+                    result = 0;
+            }
+            else {
+                result = -3;
+            }
+        }
+    }
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &lock);
+
+    close(fd);
+    return result;
+}
+
 // -1: failed, 0: invalid cust username, 1: success
 int manager_activate_deactivate_customer(int *client_socket) {
     char customer_username[USERNAME_LEN];
@@ -25,7 +69,7 @@ int manager_activate_deactivate_customer(int *client_socket) {
     int idx = -1;
     int flag = 0;
 
-    struct Customer_S temp;
+    struct Customer_S temp; memset(&temp, 0, sizeof(struct Customer_S));
     while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
         idx++;
         if (strcmp(temp.username, customer_username) == 0) {
@@ -199,11 +243,14 @@ void handle_manager_login(int *client_socket, char *username) {
     char password[PASSWORD_LEN];
     read(*client_socket, &password, sizeof(password));
 
-    struct Employee_S manager_data;
-    int employee_verify_password_status = employee_verify_password(username, password, &manager_data);
-    write(*client_socket, &employee_verify_password_status, sizeof(employee_verify_password_status));
+    char salt[SALT_LEN] = "random_salt_here";
+    char *password_hashed = hash_password(password, salt);
 
-    if(employee_verify_password_status == 1) {
+    struct Employee_S manager_data; memset(&manager_data, 0, sizeof(struct Employee_S));
+    int manager_verify_password_status = manager_verify_password(username, password_hashed, &manager_data);
+    write(*client_socket, &manager_verify_password_status, sizeof(manager_verify_password_status));
+
+    if(manager_verify_password_status == 1) {
         handle_manager_menu(client_socket, &manager_data);
     }
 }

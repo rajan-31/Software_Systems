@@ -207,29 +207,37 @@ void handle_manager_menu(int *client_socket, struct Employee_S *manager_data) {
 
     int operation=1;
     int status = -1;
-    while(read(*client_socket, &operation, sizeof(operation)) && operation > 0 && operation < 6 ) {
+    while(read(*client_socket, &operation, sizeof(operation)) && operation > 0 && operation < 8 ) {
         switch (operation)
         {
         case 1:
-            status = manager_activate_deactivate_customer(client_socket);
-            write(*client_socket, &status, sizeof(status));
+            employee_view_customers(client_socket);
             break;
 
         case 2:
+            status = manager_activate_deactivate_customer(client_socket);
+            write(*client_socket, &status, sizeof(status));
+            break;
+        
+        case 3:
+            admin_view_bank_employees(client_socket);
+            break;
+
+        case 4:
             status = manager_assign_loan_application_process(client_socket);
             write(*client_socket, &status, sizeof(status));
             break;
 
-        case 3:
+        case 5:
             manager_review_customer_feedbacks(client_socket);
             break;
             
-        case 4:
+        case 6:
             status = employee_change_password(client_socket, manager_data->username);
             write(*client_socket, &status, sizeof(status));
             break;
 
-        case 5:
+        case 7:
             // Logout
             break;
         }

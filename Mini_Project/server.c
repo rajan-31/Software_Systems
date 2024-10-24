@@ -15,8 +15,8 @@
 #include "./lib/common.h"
 #include "./lib/server.h"
 #include "./lib/admin.h"
-#include "./lib/customer.h"
 #include "./lib/employee.h"
+#include "./lib/customer.h"
 #include "./lib/manager.h"
 
 const int PORT = 8080;

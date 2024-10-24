@@ -1,13 +1,13 @@
 - We can assign cpu core to thread manually (with pthread_setaffinity_np(...))
 - But, generally it's preferred to let OS handle it, to avoid hurting performance and keep code more portable
 
-- uing 2PL with consistent locking (locks in same order) for transactions, get all locks, modify, release all locks
+- Uing 2PL with consistent locking (locks in same order) for transactions, get all locks, modify, release all locks
 
-- handle circular dependency
+- Handle circular dependency
 
-- used argon2 (argon2id) for password hashing, secure than bcrypt, sha256 (not built for pass hashing), etc.
+- Used argon2 (argon2id) for password hashing, secure than bcrypt, sha256 (not built for pass hashing), etc.
 
-- currently I have not used random hash and stored in database, but that's what should be done, otherwise password is vulnerable to rainbow table attack, having salt does not fully eliminate the risk but it make it more costly (time and power wise) to guess a password
+- Currently I have not used random hash and stored in database, but that's what should be done, otherwise password is vulnerable to rainbow table attack, having salt does not fully eliminate the risk but it make it more costly (time and power wise) to guess a password
 
 - Journal (Write-Ahead Logging)
     to log transfer of funds before commiting
@@ -29,6 +29,11 @@ To do
 - [*] duplicate emp, cus add, handle this
 - [*] ask again after wrong password
 - [ ] ACID
+- [*] admin - list customers, list employees
+- [*] manager - list customers, list employees
+- [*] customer - list loan applications
+- [ ] manager - view loan app
+
 
 ---
 

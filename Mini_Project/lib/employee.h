@@ -160,35 +160,6 @@ void employee_view_customer_transaction_history(int *client_socket) {
     free(tx_history);
 }
 
-void employee_view_customers(int *client_socket) {
-    int customers_list_capacity = 100;
-    struct Customer_S *customers_list = (struct Customer_S *) malloc(customers_list_capacity * sizeof(struct Customer_S));
-
-    int fd = open("./data/customer.dat", O_RDONLY);
-
-    struct Customer_S temp;  memset(&temp, 0, sizeof(struct Customer_S));
-    int customers_list_size = 0;
-    while(read(fd, &temp, sizeof(struct Customer_S)) > 0) {
-        if(customers_list_size >= customers_list_capacity) {
-            customers_list_capacity *= 2;
-            struct Customer_S *new_customers_list = realloc(customers_list, customers_list_capacity * sizeof(struct Customer_S));
-            customers_list = new_customers_list;
-        }
-        
-        strcpy(temp.password, "");
-        customers_list[customers_list_size++] = temp;
-    }
-
-    close(fd);
-
-    write(*client_socket, &customers_list_size, sizeof(customers_list_size));
-    if(customers_list_size > 0) {
-        write(*client_socket, customers_list, customers_list_size * sizeof(struct Customer_S));
-    }
-
-    free(customers_list);
-}
-
 void employee_view_assigned_loan_applications(int *client_socket, char *username) {
     int loan_applications_capacity = 100;
     struct Loan_Account_S *loan_applications = (struct Loan_Account_S *) malloc(loan_applications_capacity * sizeof(struct Loan_Account_S));

@@ -104,32 +104,6 @@ void employee_view_customer_transaction_history(int *client_fd) {
     }
 }
 
-void employee_view_customers(int *client_fd) {
-    int customers_list_size = 0;
-    read(*client_fd, &customers_list_size, sizeof(customers_list_size));
-
-    if(customers_list_size == 0) {
-        printf("No Customers!\n");
-        return;
-    }
-
-    struct Customer_S *customers_list = (struct Customer_S *) malloc(customers_list_size * sizeof(struct Customer_S));
-    read(*client_fd, customers_list, customers_list_size * sizeof(struct Customer_S));
-
-    printf("\n%-20s %-20s %-8s %-17s\n",
-        "Username", "Fullname", "Status", "Balance"
-    );
-
-    for(int i=0;i<=customers_list_size-1; i++) {
-        printf("\n%-20s %-20s %-8s %-17.2f\n",
-            customers_list[i].username, 
-            customers_list[i].fullname,
-            customers_list[i].active == 1 ? "Active" : "Inactive",
-            customers_list[i].savings_acc_balance
-        );
-    }
-}
-
 void employee_view_assigned_loan_applications(int *client_fd) {
     int loan_applications_size = 0;
     read(*client_fd, &loan_applications_size, sizeof(loan_applications_size));

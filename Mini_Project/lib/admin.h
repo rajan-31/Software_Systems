@@ -316,7 +316,7 @@ int admin_change_password(int *client_socket) {
     
     // =======================================
     struct Admin_S admin_data; memset(&admin_data, 0, sizeof(struct Admin_S));
-    read(*client_socket, &admin_data, sizeof(admin_data));
+    read(*client_socket, &admin_data, sizeof(struct Admin_S));
 
     char salt[SALT_LEN] = "random_salt_here";
     char *password_hashed = hash_password(admin_data.password, salt);
@@ -382,38 +382,105 @@ int admin_change_password(int *client_socket) {
 
 }
 
+void employee_view_customers(int *client_socket) {
+    int customers_list_capacity = 100;
+    struct Customer_S *customers_list = (struct Customer_S *) malloc(customers_list_capacity * sizeof(struct Customer_S));
+
+    int fd = open("./data/customer.dat", O_RDONLY);
+
+    struct Customer_S temp;  memset(&temp, 0, sizeof(struct Customer_S));
+    int customers_list_size = 0;
+    while(read(fd, &temp, sizeof(struct Customer_S)) > 0) {
+        if(customers_list_size >= customers_list_capacity) {
+            customers_list_capacity *= 2;
+            struct Customer_S *new_customers_list = realloc(customers_list, customers_list_capacity * sizeof(struct Customer_S));
+            customers_list = new_customers_list;
+        }
+        
+        strcpy(temp.password, "");
+        customers_list[customers_list_size++] = temp;
+    }
+
+    close(fd);
+
+    write(*client_socket, &customers_list_size, sizeof(customers_list_size));
+    if(customers_list_size > 0) {
+        write(*client_socket, customers_list, customers_list_size * sizeof(struct Customer_S));
+    }
+
+    free(customers_list);
+}
+
+void admin_view_bank_employees(int *client_socket) {
+    int employees_list_capacity = 100;
+    struct Employee_S *employees_list = (struct Employee_S *) malloc(employees_list_capacity * sizeof(struct Employee_S));
+
+    int fd = open("./data/employee.dat", O_RDONLY);
+
+    struct Employee_S temp;  memset(&temp, 0, sizeof(struct Employee_S));
+    int employees_list_size = 0;
+    while(read(fd, &temp, sizeof(struct Employee_S)) > 0) {
+        if(employees_list_size >= employees_list_capacity) {
+            employees_list_capacity *= 2;
+            struct Employee_S *new_employees_list = realloc(employees_list, employees_list_capacity * sizeof(struct Employee_S));
+            employees_list = new_employees_list;
+        }
+        
+        strcpy(temp.password, "");
+        employees_list[employees_list_size++] = temp;
+    }
+
+    close(fd);
+
+    write(*client_socket, &employees_list_size, sizeof(employees_list_size));
+    if(employees_list_size > 0) {
+        write(*client_socket, employees_list, employees_list_size * sizeof(struct Employee_S));
+    }
+
+    free(employees_list);
+}
+
 void handle_admin_menu(int *client_socket, struct Admin_S *admin_data) {
     write(*client_socket, ADMIN_MENU_MSG, strlen(ADMIN_MENU_MSG));
 
     int operation=1;
     int status = -1;
-    while(read(*client_socket, &operation, sizeof(operation)) && operation > 0 && operation < 7 ) {
+    while(read(*client_socket, &operation, sizeof(operation)) && operation > 0 && operation < 9 ) {
         switch (operation)
         {
         case 1:
+            admin_view_bank_employees(client_socket);
+            break;
+
+        case 2:
             status = admin_add_new_bank_employee(client_socket);
             write(*client_socket, &status, sizeof(status));
             break;
 
-        case 2:
+        case 3:
             status = admin_modify_employee_details(client_socket);
             write(*client_socket, &status, sizeof(status));
             break;
-            
-        case 3:
-            status = admin_modify_customer_details(client_socket);
-            write(*client_socket, &status, sizeof(status));
-            break;
-
+        
         case 4:
             status = admin_manage_user_roles(client_socket);
             write(*client_socket, &status, sizeof(status));
             break;
+        
         case 5:
+            employee_view_customers(client_socket);
+            break;
+            
+        case 6:
+            status = admin_modify_customer_details(client_socket);
+            write(*client_socket, &status, sizeof(status));
+            break;
+            
+        case 7:
             status = admin_change_password(client_socket);
             write(*client_socket, &status, sizeof(status));
             break;
-        case 6:
+        case 8:
             break;
         }
 

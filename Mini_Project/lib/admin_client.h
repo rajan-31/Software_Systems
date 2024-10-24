@@ -135,12 +135,65 @@ void admin_change_password(int *client_fd, char *username) {
     int status = -1;
     read(*client_fd, &status, sizeof(status));
 
+    printf("STATUS: %d\n", status);
+
     if(status == -1) {
         printf("Failed to Change Password!\n");
     } else if(status == 0) {
         printf("New Password Missmatched!\n");
     } else if(status == 1) {
         printf("Password Changed\n");
+    }
+}
+
+void employee_view_customers(int *client_fd) {
+    int customers_list_size = 0;
+    read(*client_fd, &customers_list_size, sizeof(customers_list_size));
+
+    if(customers_list_size == 0) {
+        printf("No Customers!\n");
+        return;
+    }
+
+    struct Customer_S *customers_list = (struct Customer_S *) malloc(customers_list_size * sizeof(struct Customer_S));
+    read(*client_fd, customers_list, customers_list_size * sizeof(struct Customer_S));
+
+    printf("\n%-20s %-20s %-8s %-17s\n",
+        "Username", "Fullname", "Status", "Balance"
+    );
+
+    for(int i=0;i<=customers_list_size-1; i++) {
+        printf("%-20s %-20s %-8s %-17.2f\n",
+            customers_list[i].username, 
+            customers_list[i].fullname,
+            customers_list[i].active == 1 ? "Active" : "Inactive",
+            customers_list[i].savings_acc_balance
+        );
+    }
+}
+
+void admin_view_bank_employees(int *client_fd) {
+    int employees_list_size = 0;
+    read(*client_fd, &employees_list_size, sizeof(employees_list_size));
+
+    if(employees_list_size == 0) {
+        printf("No Employees!\n");
+        return;
+    }
+
+    struct Employee_S *employees_list = (struct Employee_S *) malloc(employees_list_size * sizeof(struct Employee_S));
+    read(*client_fd, employees_list, employees_list_size * sizeof(struct Employee_S));
+
+    printf("\n%-20s %-20s %-8s\n",
+        "Username", "Fullname", "Role"
+    );
+
+    for(int i=0;i<=employees_list_size-1; i++) {
+        printf("%-20s %-20s %-8s\n",
+            employees_list[i].username, 
+            employees_list[i].fullname,
+            employees_list[i].role == 2 ? "Manager" : "Employee"
+        );
     }
 }
 
@@ -157,27 +210,37 @@ int handle_admin_menu(int *client_fd, char *username, char *password){
         switch (operation)
         {
         case 1:
-            admin_add_new_bank_employee(client_fd);
+            admin_view_bank_employees(client_fd);
             break;
 
         case 2:
-            admin_modify_employee_details(client_fd);
+            admin_add_new_bank_employee(client_fd);
             break;
 
         case 3:
-            admin_modify_customer_details(client_fd);
+            admin_modify_employee_details(client_fd);
             break;
+
         case 4:
             admin_manage_user_roles(client_fd);
             break;
 
         case 5:
+            employee_view_customers(client_fd);
+            break;
+
+        case 6:
+            admin_modify_customer_details(client_fd);
+            break;
+
+        case 7:
             admin_change_password(client_fd, username);
             break;
-        case 6:
+        case 8:
+            // logout
             return 1;
         }
-    } while(operation > 0 && operation < 7 );
+    } while(operation > 0 && operation < 9 );
 
     return -1;
 }

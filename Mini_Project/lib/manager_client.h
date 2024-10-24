@@ -79,27 +79,35 @@ int handle_manager_menu(int *client_fd, char *username, char *password){
         switch (operation)
         {
         case 1:
-            manager_activate_deactivate_customer(client_fd);
+            employee_view_customers(client_fd);
             break;
 
         case 2:
-            manager_assign_loan_application_process(client_fd);
+            manager_activate_deactivate_customer(client_fd);
             break;
 
         case 3:
-            manager_review_customer_feedbacks(client_fd);
+            admin_view_bank_employees(client_fd);
             break;
 
         case 4:
-            employee_change_password(client_fd);
+            manager_assign_loan_application_process(client_fd);
             break;
 
         case 5:
+            manager_review_customer_feedbacks(client_fd);
+            break;
+
+        case 6:
+            employee_change_password(client_fd);
+            break;
+
+        case 7:
             // Logout
             return 1;
         }
 
-    } while(operation > 0 && operation < 6 );
+    } while(operation > 0 && operation < 8 );
 
     return -1;
 }

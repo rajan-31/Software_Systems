@@ -14,24 +14,32 @@ char *MAIN_MENU_ASK_PASSWORD = "\nPassword: ";
 //admin
 char *ADMIN_MENU_MSG = \
     "\n\nAdmin Menu\n"
-    "1. Add New Bank Employee\n"
-    "2. Modify Employee Details\n"
-    "3. Modify Customer Details\n"
-    "4. Manage User Roles\n"
-    "5. Change Password\n"
-    "6. Logout\n"
-    "7. Exit\n"
+    "1. View Bank Employess\n"
+    "2. Add New Bank Employee\n"
+    "3. Modify Employee Details\n"
+    "4. Manage Employee Roles\n"
+    "\n"
+    "5. View Customers\n"
+    "6. Modify Customer Details\n"
+    "\n"
+    "7. Change Password\n"
+    "8. Logout\n"
+    "9. Exit\n"
     "\nChoose Operation: ";
 
 // manager
 char *MANAGER_MENU_MSG = \
     "\n\nManager Menu\n"
-    "1. Activate or Deactivate Customer Account\n"
-    "2. Assign Loan Application Process to Employee\n"
-    "3. Review Customer Feedbacks\n"
-    "4. Change Password\n"
-    "5. Logout\n"
-    "6. Exit\n"
+    "1. View Customers\n"
+    "2. Activate or Deactivate Customer Account\n"
+    "\n"
+    "3. View Employees\n"
+    "4. Assign Loan Application Process to Employee\n"
+    "\n"
+    "5. Review Customer Feedbacks\n"
+    "6. Change Password\n"
+    "7. Logout\n"
+    "8. Exit\n"
     "\nChoose Operation: ";
 
 // employee
@@ -58,10 +66,12 @@ char *CUSTOMER_MENU_MSG = \
     " 2. Withdraw Money\n"
     " 3. Deposit Money\n"
     " 4. Transfer Funds\n"
+    "\n"
     " 5. Apply for Loan\n"
     " 6. Change Password\n"
     " 7. Add Feedback\n"
     " 8. View Transaction History\n"
+    "\n"
     " 9. Logout\n"
     "10. Exit\n"
     "\nChoose Operation: ";

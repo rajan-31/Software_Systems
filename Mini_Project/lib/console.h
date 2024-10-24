@@ -34,12 +34,13 @@ char *MANAGER_MENU_MSG = \
     "2. Activate or Deactivate Customer Account\n"
     "\n"
     "3. View Employees\n"
-    "4. Assign Loan Application Process to Employee\n"
+    "4. View Loan Applications\n"
+    "5. Assign Loan Application Process to Employee\n"
     "\n"
-    "5. Review Customer Feedbacks\n"
-    "6. Change Password\n"
-    "7. Logout\n"
-    "8. Exit\n"
+    "6. Review Customer Feedbacks\n"
+    "7. Change Password\n"
+    "8. Logout\n"
+    "9. Exit\n"
     "\nChoose Operation: ";
 
 // employee

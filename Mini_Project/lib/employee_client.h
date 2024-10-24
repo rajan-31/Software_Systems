@@ -116,12 +116,12 @@ void employee_view_assigned_loan_applications(int *client_fd) {
     struct Loan_Account_S *loan_applications = (struct Loan_Account_S *) malloc(loan_applications_size * sizeof(struct Loan_Account_S));
     read(*client_fd, loan_applications, loan_applications_size * sizeof(struct Loan_Account_S));
 
-    printf("%-15s %-37s %-14s %-12s %-10s %-10s %-15s %-10s %-10s %-10s %-10s\n",
-        "username", "acc", "type", "amount", "duration", "annual_inc", "employee", "credit_sc", "interest", "processed", "accepted"
+    printf("\n%-20s %-37s %-14s %-19s %-17s %-13s %-20s %-12s %-17s %-9s %-8s\n",
+        "Username", "Account", "Type", "Amount (₹)", "Duration (Months)", "Annual Income", "Employee", "Credit Score", "Interest Rate (%)", "Processed", "Accepted"
     );
 
     for(int i=0;i<=loan_applications_size-1; i++) {
-        printf("%-15s %-37s %-14s %-12.2f %-10d %-10d %-15s %-10d %-10d %-10d %-10d\n",
+        printf("%-20s %-37s %-14s %-17.2f %-17d %-13d %-20s %-12d %-17d %-9s %-8s\n",
             loan_applications[i].username,
             loan_applications[i].loan_acc_num,
             loan_applications[i].type == HOME_LOAN_E ? "Home Loan" :
@@ -136,8 +136,8 @@ void employee_view_assigned_loan_applications(int *client_fd) {
             loan_applications[i].assigned_employee,
             loan_applications[i].credit_score,
             loan_applications[i].interest_rate,
-            loan_applications[i].processed,
-            loan_applications[i].accepted
+            loan_applications[i].processed == 1 ? "Yes" : "No",
+            loan_applications[i].accepted == 1 ? "Yes" : "No"
         );
     }
 }

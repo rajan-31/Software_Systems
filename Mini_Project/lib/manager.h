@@ -200,6 +200,34 @@ void manager_review_customer_feedbacks(int *client_socket) {
     free(feedback);
 }
 
+void manager_view_loan_applications(int *client_socket) {
+    int loan_applications_capacity = 100;
+    struct Loan_Account_S *loan_applications = (struct Loan_Account_S *) malloc(loan_applications_capacity * sizeof(struct Loan_Account_S));
+
+    int fd = open("./data/loan.dat", O_RDONLY);
+
+    struct Loan_Account_S temp;
+    int loan_applications_size = 0;
+    while(read(fd, &temp, sizeof(struct Loan_Account_S)) > 0) {
+        if(loan_applications_size >= loan_applications_capacity) {
+            loan_applications_capacity *= 2;
+            struct Loan_Account_S *new_loan_applications = realloc(loan_applications, loan_applications_capacity * sizeof(struct Loan_Account_S));
+            loan_applications = new_loan_applications;
+        }
+        
+        loan_applications[loan_applications_size++] = temp;
+    }
+
+    close(fd);
+
+    write(*client_socket, &loan_applications_size, sizeof(loan_applications_size));
+    if(loan_applications_size > 0) {
+        write(*client_socket, loan_applications, loan_applications_size * sizeof(struct Loan_Account_S));
+    }
+
+    free(loan_applications);
+}
+
 // =======================================
 
 void handle_manager_menu(int *client_socket, struct Employee_S *manager_data) {
@@ -207,7 +235,7 @@ void handle_manager_menu(int *client_socket, struct Employee_S *manager_data) {
 
     int operation=1;
     int status = -1;
-    while(read(*client_socket, &operation, sizeof(operation)) && operation > 0 && operation < 8 ) {
+    while(read(*client_socket, &operation, sizeof(operation)) && operation > 0 && operation < 9 ) {
         switch (operation)
         {
         case 1:
@@ -224,20 +252,24 @@ void handle_manager_menu(int *client_socket, struct Employee_S *manager_data) {
             break;
 
         case 4:
+            manager_view_loan_applications(client_socket);
+            break;
+
+        case 5:
             status = manager_assign_loan_application_process(client_socket);
             write(*client_socket, &status, sizeof(status));
             break;
 
-        case 5:
+        case 6:
             manager_review_customer_feedbacks(client_socket);
             break;
             
-        case 6:
+        case 7:
             status = employee_change_password(client_socket, manager_data->username);
             write(*client_socket, &status, sizeof(status));
             break;
 
-        case 7:
+        case 8:
             // Logout
             break;
         }

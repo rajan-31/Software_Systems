@@ -58,32 +58,57 @@ int employee_add_new_customer(int *client_socket) {
     strcpy(customer_data.password, password_hashed);
 
     
-    int fd = open("./data/customer.dat", O_WRONLY);
+    int fd = open("./data/customer.dat", O_RDWR);
     if (fd == -1) {
         perror("Error opening customer.dat file");
         return -1;
     }
 
+    // =======================================
+
     int result = -1;
+    int flag = 0;   // set if we find a match
 
-    lseek(fd, 0, SEEK_END);
-
-    
     struct flock lock;
-    lock.l_type = F_WRLCK;
-    lock.l_whence = SEEK_END;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
     lock.l_start = 0;
-    lock.l_len = sizeof(struct Customer_S);
+    lock.l_len = 0;
 
     fcntl(fd, F_SETLKW, &lock);
 
-    if (write(fd, &customer_data, sizeof(struct Customer_S)) != sizeof(struct Customer_S)) {
-        perror("Error writing to file");
-    } else
-        result = 1;
+    struct Customer_S temp; memset(&temp, 0, sizeof(struct Customer_S));
+    while (read(fd, &temp, sizeof(struct Customer_S)) > 0) {
+        if (strcmp(temp.username, customer_data.username) == 0) {
+            flag = 1;   // match found
+            break;
+        }
+    }
 
     lock.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &lock);
+
+    // =======================================
+
+    if(flag == 0) {
+        lock.l_type = F_WRLCK;
+        lock.l_whence = SEEK_END;
+        lock.l_start = 0;
+        lock.l_len = sizeof(struct Customer_S);
+
+        fcntl(fd, F_SETLKW, &lock);
+
+        lseek(fd, 0, SEEK_END);
+        if (write(fd, &customer_data, sizeof(struct Customer_S)) != sizeof(struct Customer_S)) {
+            perror("Error writing to file");
+        } else
+            result = 1;
+
+        lock.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &lock);
+    } else {
+        result = 0;
+    }
 
     close(fd);
     return result;

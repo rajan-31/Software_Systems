@@ -52,32 +52,57 @@ int admin_add_new_bank_employee(int *client_socket) {
     char *password_hashed = hash_password(employee_data.password, salt);
     strcpy(employee_data.password, password_hashed);
     
-    int fd = open("./data/employee.dat", O_WRONLY);
+    int fd = open("./data/employee.dat", O_RDWR);
     if (fd == -1) {
         perror("Error opening employee.dat file");
         return -1;
     }
 
+    // =======================================
+
     int result = -1;
+    int flag =0;
 
-    lseek(fd, 0, SEEK_END);
-
-    
     struct flock lock;
-    lock.l_type = F_WRLCK;
-    lock.l_whence = SEEK_END;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
     lock.l_start = 0;
-    lock.l_len = sizeof(employee_data);
+    lock.l_len = 0;
 
     fcntl(fd, F_SETLKW, &lock);
 
-    if (write(fd, &employee_data, sizeof(struct Employee_S)) != sizeof(struct Employee_S)) {
-        perror("Error writing to file");
-    } else
-        result = 1;
+    struct Employee_S temp; memset(&temp, 0, sizeof(struct Employee_S));
+    while (read(fd, &temp, sizeof(struct Employee_S)) > 0) {
+        if (strcmp(temp.username, employee_data.username) == 0) {
+            flag = 1;   // match found
+            break;
+        }
+    }
 
     lock.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &lock);
+
+    // =======================================
+
+    if(flag == 0) {
+        lock.l_type = F_WRLCK;
+        lock.l_whence = SEEK_END;
+        lock.l_start = 0;
+        lock.l_len = sizeof(employee_data);
+
+        fcntl(fd, F_SETLKW, &lock);
+
+        lseek(fd, 0, SEEK_END);
+        if (write(fd, &employee_data, sizeof(struct Employee_S)) != sizeof(struct Employee_S)) {
+            perror("Error writing to file");
+        } else
+            result = 1;
+
+        lock.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &lock);
+    } else {
+        result = 0;
+    }
 
     close(fd);
     return result;

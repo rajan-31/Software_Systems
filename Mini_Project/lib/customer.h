@@ -567,6 +567,7 @@ void handle_customer_menu(int *client_socket, struct Customer_S *customer_data) 
 }
 
 void handle_customer_login(int *client_socket, char *username) {
+    ask_password_again:
     write(*client_socket, MAIN_MENU_ASK_PASSWORD, strlen(MAIN_MENU_ASK_PASSWORD));
 
     char password[PASSWORD_LEN];
@@ -578,6 +579,10 @@ void handle_customer_login(int *client_socket, char *username) {
     struct Customer_S customer_data; memset(&customer_data, 0, sizeof(struct Customer_S));
     int customer_verify_password_status = customer_verify_password(username, password_hashed, &customer_data);
     write(*client_socket, &customer_verify_password_status, sizeof(customer_verify_password_status));
+
+    if(customer_verify_password_status == 0) {
+        goto ask_password_again;
+    }
 
     if(customer_verify_password_status == 1) {
         handle_customer_menu(client_socket, &customer_data);

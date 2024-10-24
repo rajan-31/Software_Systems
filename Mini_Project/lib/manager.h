@@ -238,6 +238,7 @@ void handle_manager_menu(int *client_socket, struct Employee_S *manager_data) {
 }
 
 void handle_manager_login(int *client_socket, char *username) {
+    ask_password_again:
     write(*client_socket, MAIN_MENU_ASK_PASSWORD, strlen(MAIN_MENU_ASK_PASSWORD));
 
     char password[PASSWORD_LEN];
@@ -249,6 +250,10 @@ void handle_manager_login(int *client_socket, char *username) {
     struct Employee_S manager_data; memset(&manager_data, 0, sizeof(struct Employee_S));
     int manager_verify_password_status = manager_verify_password(username, password_hashed, &manager_data);
     write(*client_socket, &manager_verify_password_status, sizeof(manager_verify_password_status));
+
+    if(manager_verify_password_status == 0) {
+        goto ask_password_again;
+    }
 
     if(manager_verify_password_status == 1) {
         handle_manager_menu(client_socket, &manager_data);

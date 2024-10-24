@@ -421,6 +421,7 @@ void handle_admin_menu(int *client_socket, struct Admin_S *admin_data) {
 }
 
 void handle_admin_login(int *client_socket, char *username) {
+    ask_password_again:
     write(*client_socket, MAIN_MENU_ASK_PASSWORD, strlen(MAIN_MENU_ASK_PASSWORD));
 
     char password[PASSWORD_LEN];
@@ -432,6 +433,10 @@ void handle_admin_login(int *client_socket, char *username) {
     struct Admin_S admin_data; memset(&admin_data, 0, sizeof(struct Admin_S));
     int admin_verify_password_status = admin_verify_password(username, password_hashed, &admin_data);
     write(*client_socket, &admin_verify_password_status, sizeof(admin_verify_password_status));
+
+    if(admin_verify_password_status == 0) {
+        goto ask_password_again;
+    }
 
     if(admin_verify_password_status == 1) {
         handle_admin_menu(client_socket, &admin_data);

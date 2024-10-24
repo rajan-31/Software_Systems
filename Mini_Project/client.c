@@ -62,6 +62,8 @@ int main() {
         read(client_fd, &active_session_assign, sizeof(active_session_assign));
 
         if(active_session_assign == 1) {
+            clear_input_buffer();
+            ask_password_again:
             char buffer3[100] = {0};
             read(client_fd, &buffer3, sizeof(buffer3));
             printf("%s", buffer3);
@@ -71,7 +73,6 @@ int main() {
             // =======================================
             // ref: https://stackoverflow.com/questions/1786532/c-command-line-password-input
 
-            clear_input_buffer();
             get_password(password);
 
             // =======================================
@@ -90,6 +91,7 @@ int main() {
                 printf("\nInvalid Username!\n");
             } else if(verify_user_password_status == 0) {
                 printf("\nInvalid Password!\n");
+                goto ask_password_again;
             } else if(verify_user_password_status == 1) {
                 if(user_role == 1) {
                     do_goto_connect = handle_admin_menu(&client_fd, username, password);

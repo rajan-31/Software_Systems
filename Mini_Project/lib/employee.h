@@ -485,6 +485,7 @@ void handle_employee_menu(int *client_socket, struct Employee_S *employee_data) 
 }
 
 void handle_employee_login(int *client_socket, char *username) {
+    ask_password_again:
     write(*client_socket, MAIN_MENU_ASK_PASSWORD, strlen(MAIN_MENU_ASK_PASSWORD));
 
     char password[PASSWORD_LEN];
@@ -496,6 +497,10 @@ void handle_employee_login(int *client_socket, char *username) {
     struct Employee_S employee_data; memset(&employee_data, 0, sizeof(struct Employee_S));
     int employee_verify_password_status = employee_verify_password(username, password_hashed, &employee_data);
     write(*client_socket, &employee_verify_password_status, sizeof(employee_verify_password_status));
+
+    if(employee_verify_password_status == 0) {
+        goto ask_password_again;
+    }
 
     if(employee_verify_password_status == 1) {
         handle_employee_menu(client_socket, &employee_data);

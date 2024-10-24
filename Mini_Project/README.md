@@ -27,7 +27,7 @@ To do
 - [ ] only assigned employee should be able to proccess and accept/reject loan
 - [*] you can transfer to yourself, handle this
 - [*] duplicate emp, cus add, handle this
-- [ ] ask again after wrong password
+- [*] ask again after wrong password
 - [ ] ACID
 
 ---

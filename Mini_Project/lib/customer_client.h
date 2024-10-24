@@ -91,7 +91,7 @@ void customer_view_transaction_history(int *client_fd, char *username) {
     read(*client_fd, tx_history, tx_history_size * sizeof(struct Transaction_S));
 
 
-    printf("\n%-37s %-10s %-8s %-40s %-19s %-19s %-19s\n",
+    printf("\n%-37s %-10s %-8s %-30s %-19s %-19s %-19s\n",
         "Transaction ID", "Date", "Time", "Remarks", "Debit (₹)", "Credit (₹)", "Balance (₹)"
     );
 
@@ -103,7 +103,7 @@ void customer_view_transaction_history(int *client_fd, char *username) {
  
 
         float debited = -1, credited = -1;
-        char reamarks[40];
+        char reamarks[150];
         if(strcmp(tx_history[i].payer, tx_history[i].payee) == 0) {
             if(tx_history[i].t_type == DEBIT_E) {
                 debited = tx_history[i].amount;
@@ -114,15 +114,15 @@ void customer_view_transaction_history(int *client_fd, char *username) {
             }
         } else if(strcmp(tx_history[i].payer, username) == 0) {
             debited = tx_history[i].amount;
-            snprintf(reamarks, 40, "Transferred to %s", tx_history[i].payee);
+            snprintf(reamarks, 150, "Transferred to %s", tx_history[i].payee);
         } else {
             credited = tx_history[i].amount;
-            snprintf(reamarks, 40, "Transferred by %s", tx_history[i].payer);
+            snprintf(reamarks, 150, "Transferred by %s", tx_history[i].payer);
         }
 
 
         if(debited == -1) {
-            printf("%-37s %-19s %-40s %-17s %-17.2f %-17.2f\n",
+            printf("%-37s %-19s %-30s %-17s %-17.2f %-17.2f\n",
                 tx_history[i].transaction_id,
                 time_buffer,
                 reamarks,
@@ -131,7 +131,7 @@ void customer_view_transaction_history(int *client_fd, char *username) {
                 tx_history[i].payer_balance == -1 ? tx_history[i].payee_balance : tx_history[i].payer_balance
             );
         } else {
-            printf("%-37s %-19s %-40s %-17.2f %-17s %-17.2f\n",
+            printf("%-37s %-19s %-30s %-17.2f %-17s %-17.2f\n",
                 tx_history[i].transaction_id,
                 time_buffer,
                 reamarks,

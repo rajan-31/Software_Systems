@@ -17,6 +17,7 @@ gcc client.c -o client -largon2
 ## Features
 
 - Multithreading, to handle multple concurrent users
+- Single session per user
 - Hashing password with "Argon2", which is secure than bcrypt, sha256 (not built for pass hashing), etc.
 - 2PL with consistent locking (locks in same order) for transactions
     - Get all locks in fix order, modify, release all locks
@@ -44,6 +45,25 @@ gcc client.c -o client -largon2
     else calloc
 
     - there is more to it, if look into finer details about both
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- 
